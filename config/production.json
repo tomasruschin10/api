@@ -1,0 +1,13 @@
+{
+  "server": {
+    "port": 443
+  },
+  "enviroment": "production",
+  "database": {
+    "host": "db-mysql-fadu-do-user-13229506-0.b.db.ondigitalocean.com",
+    "port": 25060,
+    "username": "doadmin",
+    "password": "AVNS_4P4KadUP0O673rs3fxf",
+    "database": "defaultdb"
+  }
+}
