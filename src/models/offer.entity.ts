@@ -20,12 +20,6 @@ export class Offer {
     @Column()
     offer_category_id: number;
 
-    @Column()
-    career_id: number;
-
-    @Column()
-    partner_id: number;
-
     @Column({ nullable: true, type: 'longtext' })
     description: string;
 
@@ -56,14 +50,14 @@ export class Offer {
     })
     image: Image;
 
-    @ManyToOne(() => Partner, partner => partner.id, { onDelete: 'CASCADE' })
+    @ManyToOne(() => Partner, partner => partner.id, { onDelete: 'CASCADE', nullable: true})
     @JoinColumn({
         name: 'partner_id',
         referencedColumnName: 'id'
     })
     partner: Partner;
 
-    @ManyToOne(() => Career, career => career.id, { onDelete: 'CASCADE' })
+    @ManyToOne(() => Career, career => career.id, { onDelete: 'CASCADE' , nullable: true})
     @JoinColumn({
         name: 'career_id',
         referencedColumnName: 'id'

@@ -25,10 +25,10 @@ export class OfferController {
     async create(@Body() req : offerCreateDto, @UploadedFile() file: Express.Multer.File) {
       const createBody: offerBody = req;
       let fileUploaded = await this.uploadFile(file)
+
       return await this.offerService.create(createBody, fileUploaded);
     }
 
-    
     @UseGuards(JwtAuthGuard)
     @Get('all')
     @ApiResponse ({status: 500, description: 'Server Error'})

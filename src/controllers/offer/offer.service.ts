@@ -2,6 +2,7 @@ import { HttpStatus, Injectable, HttpException, BadRequestException } from '@nes
 import { ImageRepository } from 'src/modules/database/repositories/imageRepository.service';
 import { OfferRepository } from '../../modules/database/repositories/offerRepository.service';
 import { FirestorageService } from '../firestorage/firestorage.service';
+
 @Injectable()
 export class OfferService {
 
@@ -14,7 +15,15 @@ export class OfferService {
     async create(request: any, file){
       request.image_id = (await this.imageRepository.create(file)).id
 
-      const offer = await this.offerRepository.create(request)
+
+      const data = {
+         title: request.description,
+         offer_category_id: request.offer_category_id,
+         description: request.description,
+         image_id: request.image_id
+     };
+
+      const offer = await this.offerRepository.create(data)
       if (!offer) throw new BadRequestException(['incorrect data'])     
 
       return await this.getById(offer.id);

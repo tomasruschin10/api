@@ -4,6 +4,6 @@ export interface offerBody {
     offer_category_id: number;
     partner_id: number;
     description: string;
-    url: string;
+    url?: string;
     image: Express.Multer.File
 } 
