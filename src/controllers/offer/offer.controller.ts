@@ -1,4 +1,4 @@
-import {Body, Controller, Get, HttpException, HttpStatus, Post, Request, Response, Res, UseGuards, Put, Param, ParseIntPipe, Delete, UseInterceptors, UploadedFile, BadRequestException, Headers, Query} from '@nestjs/common';
+import {Body, Controller, Get, HttpException, HttpStatus, Post, Request, Response, Res, UseGuards, Put, Param, ParseIntPipe, Delete, UseInterceptors, UploadedFile, BadRequestException, Headers, Query, Patch} from '@nestjs/common';
 
 import { OfferService } from './offer.service';
 import { ApiTags, ApiParam, ApiResponse } from '@nestjs/swagger';
@@ -15,19 +15,27 @@ export class OfferController {
   
     constructor(private offerService: OfferService, private firestorageService: FirestorageService) {}
 
-    
     @UseGuards(JwtAuthGuard)
     @Post('create')
     @ApiResponse ({status: 500, description: 'Server Error'})
     @ApiResponse({status: 400, description: 'Incorrect Data'})
     @ApiResponse({status: 200, description: 'Correct Registration', type: offerDto})
     @UseInterceptors(FileInterceptor('image'))
-
     async create(@Body() req : offerCreateDto, @UploadedFile() file: Express.Multer.File) {
       const createBody: offerBody = req;
       let fileUploaded = await this.uploadFile(file)
 
       return await this.offerService.create(createBody, fileUploaded);
+    }
+
+
+    @Patch(':id/change-approved-status')
+    @ApiParam({name: 'id', required: true, description: 'Record Identifier'})
+    @ApiResponse ({status: 500, description: 'Server Error'})
+    @ApiResponse({status: 404, description: 'Record not found'})
+    @ApiResponse({status: 200, description: 'Correct', type: offerDto})
+    async changeApprovedStatus(@Param('id', ParseIntPipe) id: number) {
+      return await this.offerService.updateOfferApprovedStatus(id);
     }
 
     @UseGuards(JwtAuthGuard)
@@ -39,7 +47,6 @@ export class OfferController {
       return await this.offerService.getAll(data.userData.career_id, query.search);
     }
 
-    
     //@UseGuards(JwtAuthGuard)
     @Get(':id')
     @ApiParam({name: 'id', required: true, description: 'Record Identifier'})
@@ -49,7 +56,6 @@ export class OfferController {
     async getById(@Param('id', ParseIntPipe) id: number) {
       return await this.offerService.getById(id);
     }
-
     
     @UseGuards(JwtAuthGuard)
     @Put('update/:id')
@@ -64,7 +70,6 @@ export class OfferController {
       let fileUploaded = file ? await this.uploadFile(file) : null
       return await this.offerService.update(id, updateBody, fileUploaded);
     }
-
     
     @UseGuards(JwtAuthGuard)
     @Delete('delete/:id')
@@ -92,6 +97,30 @@ export class OfferController {
     async getCourseOffers(@Headers() header, @Query() query: {search: string}) {
       const data : any = jwt.decode(header.authorization.replace('Bearer ', ''));
       return await this.offerService.getCourseOffers(data.userData.career_id, query.search);
+    }
+
+    @UseGuards(JwtAuthGuard)
+    @Get('admin/all/course')
+    @ApiResponse ({status: 500, description: 'Server Error'})
+    @ApiResponse({status: 200, description: 'Correct', type: offerDto})
+    async getAdminCourseOffers(@Headers() header, @Query() query: {search: string}) {
+      return await this.offerService.getAdminCourseOffers(query.search);
+    }
+
+    @UseGuards(JwtAuthGuard)
+    @Get('admin/all/work')
+    @ApiResponse ({status: 500, description: 'Server Error'})
+    @ApiResponse({status: 200, description: 'Correct', type: offerDto})
+    async getAdminWorkOffers(@Headers() header, @Query() query: {search: string}) {
+      return await this.offerService.getAdminWorkOffers(query.search);
+    }
+
+    @UseGuards(JwtAuthGuard)
+    @Get('all/admin')
+    @ApiResponse ({status: 500, description: 'Server Error'})
+    @ApiResponse({status: 200, description: 'Correct', type: offerDto})
+    async getAdminAll(@Headers() header, @Query() query: {search: string}) {
+      return await this.offerService.getAdminAll(query.search);
     }
 
     async uploadFile(file) {

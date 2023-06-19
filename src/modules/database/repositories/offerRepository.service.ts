@@ -19,21 +19,33 @@ export class OfferRepository {
         //return
         return offer
     }
-
-    async getAll(career, search): Promise<Offer[] | string> {
-        let query = 'o.offer_category_id != 1 AND o.offer_category_id != 2'
-        career ? query += ` AND o.career_id = ${career}` : ''
-        search ? query += ` AND (o.description LIKE '%${search}%' OR o.title LIKE '%${search}%')` : ''
-
-        return await this.offersRepository.createQueryBuilder('o')
-            .innerJoinAndSelect('o.offerCategory', 'oo')
-            .leftJoinAndSelect('o.image', 'oi')
-            .leftJoinAndSelect('o.partner', 'op')
-            .leftJoinAndSelect('o.career', 'os')
-            .where(query)
-            .orderBy('o.id', 'DESC')
-            .getMany()
-    }
+    async getAll(career: number, search: string): Promise<Offer[] | string> {
+        const queryBuilder = this.offersRepository.createQueryBuilder('o')
+          .innerJoinAndSelect('o.offerCategory', 'oo')
+          .leftJoinAndSelect('o.image', 'oi')
+          .leftJoinAndSelect('o.partner', 'op')
+          .leftJoinAndSelect('o.career', 'os')
+          .where('o.offer_category_id NOT IN (:...categories)', { categories: [1, 2] });
+      
+        if (career) {
+          queryBuilder.andWhere('o.career_id = :career', { career });
+        }
+      
+        if (search) {
+          const searchQuery = search.trim();
+          if (searchQuery.length > 0) {
+            queryBuilder.andWhere('(o.description LIKE :search OR o.title LIKE :search)', { search: `%${searchQuery}%` });
+          }
+        }
+      
+        const offers = await queryBuilder
+          .orderBy('o.id', 'DESC')
+          .getMany();
+      
+        return offers;
+      }
+      
+      
 
 
     async getById(id): Promise<Offer | string> {
@@ -57,7 +69,7 @@ export class OfferRepository {
             throw new HttpException('error! record not found', HttpStatus.NOT_FOUND);
 
         offer = await this.sharedService.updateObject(offer, request)
-
+        console.log("updateObject ",request,offer)
         await this.offersRepository.save(offer);
 
         return offer;
@@ -73,33 +85,120 @@ export class OfferRepository {
 
     }
 
-    async getWorkOffers(career, search): Promise<Offer[] | string> {
-        let query = "o.offer_category_id = 1"
-        if (career) query += ` AND o.career_id = ${career}`
-        if (search) query += ` AND (o.description LIKE '%${search}%' OR o.title LIKE '%${search}%')`
-        
-        return await this.offersRepository.createQueryBuilder('o')
-            .innerJoinAndSelect('o.offerCategory', 'oo')
-            .leftJoinAndSelect('o.image', 'oi')
-            .leftJoinAndSelect('o.partner', 'op')
-            .leftJoinAndSelect('o.career', 'oc')
-            .where(query)
-            .orderBy('o.id', 'DESC')
-            .getMany()
-    }
+    async getWorkOffers(career: string, search: string): Promise<Offer[] | string> {
+        const queryBuilder = this.offersRepository.createQueryBuilder('o')
+          .innerJoinAndSelect('o.offerCategory', 'oo')
+          .leftJoinAndSelect('o.image', 'oi')
+          .leftJoinAndSelect('o.partner', 'op')
+          .leftJoinAndSelect('o.career', 'oc')
+          .where('o.offer_category_id = 1')
+          .andWhere('o.approved = 1');
+      
+        if (career) {
+          queryBuilder.andWhere('o.career_id = :career', { career });
+        }
+      
+        if (search) {
+          queryBuilder.andWhere('(o.description LIKE :search OR o.title LIKE :search)', { search: `%${search}%` });
+        }
+      
+        const offers = await queryBuilder
+          .orderBy('o.id', 'DESC')
+          .getMany();
+      
+        return offers;
+      }
+      
 
-    async getCourseOffers(career, search): Promise<Offer[] | string> {
-        let query = "o.offer_category_id = 2"
-        if (career) query += ` AND o.career_id = ${career}`
-        if (search) query += ` AND (o.description LIKE '%${search}%' OR o.title LIKE '%${search}%')`
-        
-        return await this.offersRepository.createQueryBuilder('o')
-            .innerJoinAndSelect('o.offerCategory', 'oo')
-            .leftJoinAndSelect('o.image', 'oi')
-            .leftJoinAndSelect('o.partner', 'op')
-            .leftJoinAndSelect('o.career', 'oc')
-            .where(query)
-            .orderBy('o.id', 'DESC')
-            .getMany()
+
+
+    async getCourseOffers(career: string, search: string): Promise<Offer[] | string> {
+        let query = this.offersRepository.createQueryBuilder('o')
+          .innerJoinAndSelect('o.offerCategory', 'oo')
+          .leftJoinAndSelect('o.image', 'oi')
+          .leftJoinAndSelect('o.partner', 'op')
+          .leftJoinAndSelect('o.career', 'oc')
+          .where("o.offer_category_id = :categoryId AND o.approved = :approved", { categoryId: 2, approved: 1 });
+      
+        if (career) {
+          query = query.andWhere("o.career_id = :careerId", { careerId: career });
+        }
+      
+        if (search) {
+          query = query.andWhere("(o.description LIKE :search OR o.title LIKE :search)", { search: `%${search}%` });
+        }
+      
+        query = query.orderBy('o.id', 'DESC');
+      
+        try {
+          const offers = await query.getMany();
+          return offers;
+        } catch (error) {
+          return "Error retrieving course offers.";
+        }
+      }
+
+      async getAdminAll(search: string): Promise<Offer[] | string> {
+        const queryBuilder = this.offersRepository.createQueryBuilder('o')
+          .innerJoinAndSelect('o.offerCategory', 'oo')
+          .leftJoinAndSelect('o.image', 'oi')
+          .leftJoinAndSelect('o.partner', 'op')
+          .leftJoinAndSelect('o.career', 'os')
+          .where('o.offer_category_id NOT IN (:...categories)', { categories: [1, 2] });
+      
+        if (search) {
+          const searchQuery = search.trim();
+          if (searchQuery.length > 0) {
+            queryBuilder.andWhere('(o.description LIKE :search OR o.title LIKE :search)', { search: `%${searchQuery}%` });
+          }
+        }
+      
+        const offers = await queryBuilder
+          .orderBy('o.id', 'DESC')
+          .getMany();
+      
+        return offers;
+      }
+
+    async getAdminWorkOffers(search): Promise<Offer[] | string> {
+        const queryBuilder = this.offersRepository.createQueryBuilder('o')
+          .innerJoinAndSelect('o.offerCategory', 'oo')
+          .leftJoinAndSelect('o.image', 'oi')
+          .leftJoinAndSelect('o.partner', 'op')
+          .leftJoinAndSelect('o.career', 'oc')
+          .where('o.offer_category_id = 1');
+
+        if (search) {
+          queryBuilder.andWhere('(o.description LIKE :search OR o.title LIKE :search)', { search: `%${search}%` });
+        }
+      
+        const offers = await queryBuilder
+          .orderBy('o.id', 'DESC')
+          .getMany();
+      
+        return offers;
     }
+      async getAllCourseOffers(search: string): Promise<Offer[] | string> {
+        let query = this.offersRepository.createQueryBuilder('o')
+          .innerJoinAndSelect('o.offerCategory', 'oo')
+          .leftJoinAndSelect('o.image', 'oi')
+          .leftJoinAndSelect('o.partner', 'op')
+          .leftJoinAndSelect('o.career', 'oc')
+          .where("o.offer_category_id = :categoryId", { categoryId: 2});
+      
+        if (search) {
+          query = query.andWhere("(o.description LIKE :search OR o.title LIKE :search)", { search: `%${search}%` });
+        }
+      
+        query = query.orderBy('o.id', 'DESC');
+      
+        try {
+          const offers = await query.getMany();
+          return offers;
+        } catch (error) {
+            console.error(error)
+          return "Error retrieving course offers.";
+        }
+      }
 }
+ 
