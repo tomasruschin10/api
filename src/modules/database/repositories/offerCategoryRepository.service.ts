@@ -21,7 +21,38 @@ export class OfferCategoryRepository {
         return offerCategory
     }
 
-    async getAll(role_id, career_id, search): Promise<OfferCategory[] | string> {
+    async getAll(role_id: number, career_id: number, search: string): Promise<OfferCategory[] | string> {
+        let where = 'o.id != 1 AND o.id != 2';
+        let query;
+      
+        if (career_id) {
+          where += ` AND oo.career_id = ${career_id}`;
+        }
+        if (search) {
+          where += ` AND (oo.title LIKE '%${search}%' OR oo.description LIKE '%${search}%')`;
+        }
+      
+        if (role_id == 1) {
+          query = await this.offerCategorysRepository.createQueryBuilder('o')
+            .getMany();
+        } else {
+          query = await this.offerCategorysRepository.createQueryBuilder('o')
+            .leftJoinAndSelect('o.offers', 'oo')
+            .leftJoinAndSelect('oo.image', 'ooi')
+            .leftJoinAndSelect('oo.partner', 'oop')
+            .where(where)
+            .orderBy('o.id', 'DESC')
+            .getMany();
+        }
+      
+        // Filtrar categorías que no tienen ofertas aprobadas
+        const categoriesWithApprovedOffers = query.filter(category => category.offers.some(offer => offer.approved));
+      
+        return categoriesWithApprovedOffers;
+      }
+      
+
+/*     async getAll(role_id, career_id, search): Promise<OfferCategory[] | string> {
         let where ='o.id != 1 AND o.id != 2'
         let query
 
@@ -42,7 +73,7 @@ export class OfferCategoryRepository {
         }
 
         return query;
-    }
+    } */
 
 
     async getById(id): Promise<OfferCategory | string> {
