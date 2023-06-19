@@ -6,7 +6,7 @@ module.exports = {
             watch: false,
             env: {
                 "PORT": 3000,
-                "IP": "164.92.100.215",
+                "IP": "146.190.50.58",
                 "NODE_ENV": "production"
             }
         }
