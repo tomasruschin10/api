@@ -2,6 +2,8 @@ import { HttpStatus, Injectable, HttpException, BadRequestException } from '@nes
 import { ImageRepository } from 'src/modules/database/repositories/imageRepository.service';
 import { OfferRepository } from '../../modules/database/repositories/offerRepository.service';
 import { FirestorageService } from '../firestorage/firestorage.service';
+import { Offer } from 'src/models/offer.entity';
+
 @Injectable()
 export class OfferService {
 
@@ -40,6 +42,12 @@ export class OfferService {
    async getById(id:number){
       const offer = await this.offerRepository.getById(id)
       return offer;
+   }
+
+   async updateOfferApprovedStatus(id: number) {
+      const offer = await this.offerRepository.getById(id) as Offer;
+
+      this.offerRepository.update(id, { approved: !offer.approved })
    }
 
    async update(id:number, request: any, file){

@@ -35,7 +35,7 @@ export class Offer {
     @Column()
     image_id: number;
     
-    @Column()
+    @Column({ nullable: true, default: false })
     approved: boolean
     
     @CreateDateColumn({ type: "timestamp" })
