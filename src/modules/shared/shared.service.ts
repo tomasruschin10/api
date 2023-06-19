@@ -24,13 +24,14 @@ export class SharedService {
     async updateObject(object, request) {
         Object.keys(object).map(key => {
             if (request[key] || request[key] == 0) {
-                if (request[key] != '') {
-                    object[key] = request[key]
+                if (request[key] !== '') {
+                    object[key] = request[key];
                 }
             }
-        })
-
-        return object
+        });
+        
+        return object;
+        
     }
 
     async sendNotification(request, userData?) {

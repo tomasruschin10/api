@@ -2,6 +2,7 @@ import { HttpStatus, Injectable, HttpException, BadRequestException } from '@nes
 import { ImageRepository } from 'src/modules/database/repositories/imageRepository.service';
 import { OfferRepository } from '../../modules/database/repositories/offerRepository.service';
 import { FirestorageService } from '../firestorage/firestorage.service';
+import { Offer } from 'src/models/offer.entity';
 
 @Injectable()
 export class OfferService {
@@ -43,6 +44,13 @@ export class OfferService {
       return offer;
    }
 
+   async updateOfferApprovedStatus(id: number) {
+      const offer = await this.offerRepository.getById(id) as Offer;
+      const updateData = { approved: !offer.approved};
+      console.log(offer, updateData)
+      return await this.offerRepository.update(id, updateData)
+   }
+
    async update(id:number, request: any, file){
 
       const offer = await this.offerRepository.update(id, request)
@@ -72,7 +80,18 @@ export class OfferService {
       const offers = await this.offerRepository.getCourseOffers(career, search)
       return offers;
    }
-
+   async getAdminCourseOffers(search){
+      const offers = await this.offerRepository.getAllCourseOffers(search)
+      return offers;
+   }
+   async getAdminWorkOffers(search){
+      const offers = await this.offerRepository.getAdminWorkOffers(search)
+      return offers;
+   }
+   async getAdminAll(search){
+      const offers = await this.offerRepository.getAdminAll(search)
+      return offers;
+   }
    async deleteFirebase(image_id) {
       let image = await this.imageRepository.getById(image_id)
 
