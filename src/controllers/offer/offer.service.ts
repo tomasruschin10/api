@@ -2,7 +2,6 @@ import { HttpStatus, Injectable, HttpException, BadRequestException } from '@nes
 import { ImageRepository } from 'src/modules/database/repositories/imageRepository.service';
 import { OfferRepository } from '../../modules/database/repositories/offerRepository.service';
 import { FirestorageService } from '../firestorage/firestorage.service';
-
 @Injectable()
 export class OfferService {
 
