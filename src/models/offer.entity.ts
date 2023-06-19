@@ -20,12 +20,6 @@ export class Offer {
     @Column()
     offer_category_id: number;
 
-    @Column()
-    career_id: number;
-
-    @Column()
-    partner_id: number;
-
     @Column({ nullable: true, type: 'longtext' })
     description: string;
 
@@ -33,8 +27,17 @@ export class Offer {
     url: string;
 
     @Column()
-    image_id: number;
+    career_id: number;
 
+    @Column({nullable: true})
+    partner_id: number;
+
+    @Column()
+    image_id: number;
+    
+    @Column()
+    approved: boolean
+    
     @CreateDateColumn({ type: "timestamp" })
     created_at: Moment
 
@@ -56,7 +59,7 @@ export class Offer {
     })
     image: Image;
 
-    @ManyToOne(() => Partner, partner => partner.id, { onDelete: 'CASCADE' })
+    @ManyToOne(() => Partner, partner => partner.id, { onDelete: 'CASCADE'})
     @JoinColumn({
         name: 'partner_id',
         referencedColumnName: 'id'

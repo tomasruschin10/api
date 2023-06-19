@@ -15,7 +15,6 @@ export class offerCreateDto {
     offer_category_id: number;
 
     @ApiProperty()
-    @IsNotEmpty()
     partner_id: number
 
     @ApiProperty()
@@ -28,12 +27,13 @@ export class offerCreateDto {
     description: string;
 
     @ApiProperty()
-    @IsNotEmpty()
-    @IsString()
     url: string;
 
     @ApiProperty()
     image: Express.Multer.File
+    
+    @ApiProperty()
+    approved: boolean
 }
 
 export class offerUpdateDto {
