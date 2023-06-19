@@ -46,7 +46,7 @@ interface IDBConfig {
 }
 export const env = process.env.NODE_ENV ?? 'development'
 export const SERVER_CONFIG = {
-  db: {
+   db: {
     type: 'mysql',
     host: config.get("database.host"),
     port: parseInt(config.get("database.port")),
@@ -59,6 +59,20 @@ export const SERVER_CONFIG = {
     autoLoadEntities: true
 
   }
+ 
+/*   db: {
+    type: 'mysql',
+    host: "db",
+    port: 3306,
+    username: "user",
+    password: "user",
+    database:"masfadu",
+    logging: true,
+    synchronize: env === 'development' ? false : true,
+    // synchronize:  true, 
+    autoLoadEntities: true
+
+  } */
 }
 export function extendDatabaseConfig(source: IEnvironmentConfig) {
   const DB_CONFIG: any = {};
