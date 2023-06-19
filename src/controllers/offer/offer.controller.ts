@@ -21,7 +21,6 @@ export class OfferController {
     @ApiResponse({status: 400, description: 'Incorrect Data'})
     @ApiResponse({status: 200, description: 'Correct Registration', type: offerDto})
     @UseInterceptors(FileInterceptor('image'))
-
     async create(@Body() req : offerCreateDto, @UploadedFile() file: Express.Multer.File) {
       const createBody: offerBody = req;
       let fileUploaded = await this.uploadFile(file)
@@ -98,6 +97,30 @@ export class OfferController {
     async getCourseOffers(@Headers() header, @Query() query: {search: string}) {
       const data : any = jwt.decode(header.authorization.replace('Bearer ', ''));
       return await this.offerService.getCourseOffers(data.userData.career_id, query.search);
+    }
+
+    @UseGuards(JwtAuthGuard)
+    @Get('admin/all/course')
+    @ApiResponse ({status: 500, description: 'Server Error'})
+    @ApiResponse({status: 200, description: 'Correct', type: offerDto})
+    async getAdminCourseOffers(@Headers() header, @Query() query: {search: string}) {
+      return await this.offerService.getAdminCourseOffers(query.search);
+    }
+
+    @UseGuards(JwtAuthGuard)
+    @Get('admin/all/work')
+    @ApiResponse ({status: 500, description: 'Server Error'})
+    @ApiResponse({status: 200, description: 'Correct', type: offerDto})
+    async getAdminWorkOffers(@Headers() header, @Query() query: {search: string}) {
+      return await this.offerService.getAdminWorkOffers(query.search);
+    }
+
+    @UseGuards(JwtAuthGuard)
+    @Get('all/admin')
+    @ApiResponse ({status: 500, description: 'Server Error'})
+    @ApiResponse({status: 200, description: 'Correct', type: offerDto})
+    async getAdminAll(@Headers() header, @Query() query: {search: string}) {
+      return await this.offerService.getAdminAll(query.search);
     }
 
     async uploadFile(file) {

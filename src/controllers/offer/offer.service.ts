@@ -46,8 +46,9 @@ export class OfferService {
 
    async updateOfferApprovedStatus(id: number) {
       const offer = await this.offerRepository.getById(id) as Offer;
-
-      this.offerRepository.update(id, { approved: !offer.approved })
+      const updateData = { approved: !offer.approved};
+      console.log(offer, updateData)
+      return await this.offerRepository.update(id, updateData)
    }
 
    async update(id:number, request: any, file){
@@ -79,7 +80,18 @@ export class OfferService {
       const offers = await this.offerRepository.getCourseOffers(career, search)
       return offers;
    }
-
+   async getAdminCourseOffers(search){
+      const offers = await this.offerRepository.getAllCourseOffers(search)
+      return offers;
+   }
+   async getAdminWorkOffers(search){
+      const offers = await this.offerRepository.getAdminWorkOffers(search)
+      return offers;
+   }
+   async getAdminAll(search){
+      const offers = await this.offerRepository.getAdminAll(search)
+      return offers;
+   }
    async deleteFirebase(image_id) {
       let image = await this.imageRepository.getById(image_id)
 
