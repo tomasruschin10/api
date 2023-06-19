@@ -18,6 +18,7 @@ export class offerCreateDto {
     partner_id: number
 
     @ApiProperty()
+    @IsNotEmpty()
     career_id: number
 
     @ApiProperty()
@@ -30,6 +31,9 @@ export class offerCreateDto {
 
     @ApiProperty()
     image: Express.Multer.File
+    
+    @ApiProperty()
+    approved: boolean
 }
 
 export class offerUpdateDto {

@@ -15,13 +15,17 @@ export class OfferService {
     async create(request: any, file){
       request.image_id = (await this.imageRepository.create(file)).id
 
-
-      const data = {
-         title: request.description,
+      const data: any = {
+         title: request.title,
          offer_category_id: request.offer_category_id,
          description: request.description,
-         image_id: request.image_id
+         image_id: request.image_id,
+         career_id: parseInt(request.career_id)
      };
+
+     if(request?.partner_id) {
+      data.partner_id = request.partner_id;
+     }
 
       const offer = await this.offerRepository.create(data)
       if (!offer) throw new BadRequestException(['incorrect data'])     

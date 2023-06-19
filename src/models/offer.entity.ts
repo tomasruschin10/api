@@ -27,8 +27,17 @@ export class Offer {
     url: string;
 
     @Column()
-    image_id: number;
+    career_id: number;
 
+    @Column({nullable: true})
+    partner_id: number;
+
+    @Column()
+    image_id: number;
+    
+    @Column()
+    approved: boolean
+    
     @CreateDateColumn({ type: "timestamp" })
     created_at: Moment
 
@@ -50,14 +59,14 @@ export class Offer {
     })
     image: Image;
 
-    @ManyToOne(() => Partner, partner => partner.id, { onDelete: 'CASCADE', nullable: true})
+    @ManyToOne(() => Partner, partner => partner.id, { onDelete: 'CASCADE'})
     @JoinColumn({
         name: 'partner_id',
         referencedColumnName: 'id'
     })
     partner: Partner;
 
-    @ManyToOne(() => Career, career => career.id, { onDelete: 'CASCADE' , nullable: true})
+    @ManyToOne(() => Career, career => career.id, { onDelete: 'CASCADE' })
     @JoinColumn({
         name: 'career_id',
         referencedColumnName: 'id'

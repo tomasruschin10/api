@@ -22,6 +22,7 @@ export class OfferController {
     @ApiResponse({status: 400, description: 'Incorrect Data'})
     @ApiResponse({status: 200, description: 'Correct Registration', type: offerDto})
     @UseInterceptors(FileInterceptor('image'))
+
     async create(@Body() req : offerCreateDto, @UploadedFile() file: Express.Multer.File) {
       const createBody: offerBody = req;
       let fileUploaded = await this.uploadFile(file)
