@@ -12,6 +12,9 @@ export class SubjectCategory {
   name: string;
 
   @Column()
+  description: string;
+
+  @Column()
   career_id: number;
 
   @CreateDateColumn({type: "timestamp"})
