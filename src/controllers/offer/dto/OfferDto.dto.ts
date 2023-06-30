@@ -34,6 +34,13 @@ export class offerCreateDto {
     
     @ApiProperty()
     approved: boolean
+
+    @ApiProperty()
+    name?:string;
+    @ApiProperty()
+    company?: string;
+    @ApiProperty()
+    phone?: string;
 }
 
 export class offerUpdateDto {
@@ -60,6 +67,13 @@ export class offerUpdateDto {
 
     @ApiProperty()
     image: Express.Multer.File
+
+    @ApiProperty()
+    name?:string;
+    @ApiProperty()
+    company?: string;
+    @ApiProperty()
+    phone?: string;
 } 
 
 export class offerDto {
@@ -95,4 +109,11 @@ export class offerDto {
 
     @ApiProperty()
     updated_at: Date
+
+    @ApiProperty()
+    name?:string;
+    @ApiProperty()
+    company?: string;
+    @ApiProperty()
+    phone?: string;
 }
