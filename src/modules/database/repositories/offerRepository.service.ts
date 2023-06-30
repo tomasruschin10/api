@@ -19,34 +19,33 @@ export class OfferRepository {
         //return
         return offer
     }
-    async getAll(career: number, search: string): Promise<Offer[] | string> {
-        const queryBuilder = this.offersRepository.createQueryBuilder('o')
-          .innerJoinAndSelect('o.offerCategory', 'oo')
-          .leftJoinAndSelect('o.image', 'oi')
-          .leftJoinAndSelect('o.partner', 'op')
-          .leftJoinAndSelect('o.career', 'os')
-          .where('o.offer_category_id NOT IN (:...categories)', { categories: [1, 2] });
-      
-        if (career) {
-          queryBuilder.andWhere('o.career_id = :career', { career });
-        }
-      
-        if (search) {
-          const searchQuery = search.trim();
-          if (searchQuery.length > 0) {
-            queryBuilder.andWhere('(o.description LIKE :search OR o.title LIKE :search)', { search: `%${searchQuery}%` });
-          }
-        }
-      
-        const offers = await queryBuilder
-          .orderBy('o.id', 'DESC')
-          .getMany();
-      
-        return offers;
-      }
-      
-      
 
+    async getAll(career: number, search: string): Promise<Offer[] | string> {
+      const queryBuilder = this.offersRepository.createQueryBuilder('o')
+        .innerJoinAndSelect('o.offerCategory', 'oo')
+        .leftJoinAndSelect('o.image', 'oi')
+        .leftJoinAndSelect('o.partner', 'op')
+        .leftJoinAndSelect('o.career', 'os')
+        .where('o.offer_category_id NOT IN (:...categories)', { categories: [1, 2] })
+        .andWhere('o.approved = :approved', { approved: true });
+    
+      if (career) {
+        queryBuilder.andWhere('o.career_id = :career', { career });
+      }
+    
+      if (search) {
+        const searchQuery = search.trim();
+        if (searchQuery.length > 0) {
+          queryBuilder.andWhere('(o.description LIKE :search OR o.title LIKE :search)', { search: `%${searchQuery}%` });
+        }
+      }
+    
+      const offers = await queryBuilder
+        .orderBy('o.id', 'DESC')
+        .getMany();
+    
+      return offers;
+    }
 
     async getById(id): Promise<Offer | string> {
         const offer = await this.offersRepository.createQueryBuilder('o')

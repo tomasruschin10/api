@@ -8,7 +8,6 @@ import { Career } from './career.entity';
 
 @Entity({ name: 'offers' })
 export class Offer {
-
     @PrimaryGeneratedColumn()
     id: number;
 

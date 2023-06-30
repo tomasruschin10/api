@@ -59,6 +59,7 @@ export class SubjectCategoryService {
          let category = {
             id: cat.id,	
             name: cat.name,
+            description:cat.description,
             career_id: cat.career_id,
             subject: [],
             available: cat.available || i == 0
