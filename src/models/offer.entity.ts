@@ -37,7 +37,16 @@ export class Offer {
     
     @Column({ nullable: true, default: false })
     approved: boolean
+
+    @Column({nullable: true})
+    name?:string;
     
+    @Column({nullable: true})
+    company?:string;
+    
+    @Column({nullable: true})
+    phone?: string;
+
     @CreateDateColumn({ type: "timestamp" })
     created_at: Moment
 
