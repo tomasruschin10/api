@@ -60,7 +60,7 @@ export const SERVER_CONFIG = {
 
   }
 
-   db: {
+/*    db: {
     type: 'mysql',
     host: "db",
     port: 3306,
@@ -72,7 +72,7 @@ export const SERVER_CONFIG = {
     // synchronize:  true, 
     autoLoadEntities: true
 
-  } 
+  }  */
 }
 export function extendDatabaseConfig(source: IEnvironmentConfig) {
   const DB_CONFIG: any = {};
