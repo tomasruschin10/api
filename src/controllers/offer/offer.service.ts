@@ -16,13 +16,27 @@ export class OfferService {
     async create(request: any, file){
       request.image_id = (await this.imageRepository.create(file)).id
 
+
+
       const data: any = {
          title: request.title,
          offer_category_id: request.offer_category_id,
          description: request.description,
          image_id: request.image_id,
-         career_id: parseInt(request.career_id)
-     };
+         career_id: parseInt(request.career_id),
+      };
+
+
+
+      if(request?.name){
+         data.name = request.name;
+      }
+      if(request?.company){
+         data.company = request.company;
+      }
+      if(request?.phone){
+         data.phone = request.phone;
+      }
 
      if(request?.partner_id) {
       data.partner_id = request.partner_id;
