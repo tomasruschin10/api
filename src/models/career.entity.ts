@@ -11,7 +11,7 @@ export class Career {
   @Column()
   name: string;
 
-  @Column()
+  @Column({nullable: true})
   description_url: string;
 
   @Column()

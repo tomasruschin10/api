@@ -10,7 +10,7 @@ export interface subjectUpdateBody {
 interface subBody {
     name: string
     subject_category_id: number
-    subjectParent: Array<subjectParent>
+    subjectParent?: Array<subjectParent>
 }
 interface subjectParent {
     key: number
