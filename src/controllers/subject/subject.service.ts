@@ -9,42 +9,55 @@ export class SubjectService {
         private readonly subjectParentRepository: SubjectParentRepository
     ) {}
 
-    async create(request: any){
-      let created = {}
-      for (let i = 0; i < request.data.length; i++) {
-         let subjectParents = []
-         let body = {
-            name: request.data[i].name,
-            subject_category_id: request.data[i].subject_category_id,
-            info: request.data[i].info,
-            url: request.data[i].url,
-            prefix: request.data[i].prefix
-         }
-         for (let parent of request.data[i].subjectParent) {
-            if (parent.key || parent.key == 0 || parent.id) {
-               if (parent.key || parent.key == 0) {
-                  subjectParents.push(created[`${parent.key}`].id)
-               }
-               if (parent.id) {
-                  subjectParents.push(parent.id)
-               }
+    async create(request: { data: any[] }): Promise<{ statusCode: number, message: any }> {
+      const created: any[] = [];
+    
+      if (!Array.isArray(request.data)) {
+        throw new Error('Invalid data format. "data" should be an array.');
+      }
+    
+      for (const dataItem of request.data) {
+        const subjectParents: number[] = [];
+        const body = {
+          name: dataItem.name,
+          subject_category_id: dataItem.subject_category_id,
+          info: dataItem.info,
+          url: dataItem.url,
+          prefix: dataItem.prefix
+        };
+    
+
+    
+/*         for (const parent of dataItem?.subjectParent) {
+          if (typeof parent.key !== 'undefined' || parent.id) {
+            if (typeof parent.key !== 'undefined') {
+              subjectParents.push(created[parent.key].id);
             }
-         }
-
-         let subject = await this.subjectRepository.create(body) 
-         created[`${i}`] = subject
-         
-         // save parents
-         for (let subjectParent of subjectParents) {
+            if (parent.id) {
+              subjectParents.push(parent.id);
+            }
+          }
+        } */
+    
+        try {
+          const subject = await this.subjectRepository.create(body);
+          created.push(subject);
+    
+          // Guardar los padres
+/*           for (const subjectParent of subjectParents) {
             await this.subjectParentRepository.create({
-               subject_id: subject.id,
-               subject_parent_id: subjectParent
-            })
-         }
-      }  
-
-      return {statusCode: HttpStatus.OK, message: created};
-   }
+              subject_id: subject.id,
+              subject_parent_id: subjectParent
+            });
+          } */
+        } catch (error) {
+         console.error("ERROR: " ,error)
+        }
+      }
+    
+      return { statusCode: HttpStatus.OK, message: created };
+    }
+    
 
    async getAll(career){
       const subjects = await this.subjectRepository.getAll(career)
