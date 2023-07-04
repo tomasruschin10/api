@@ -3,6 +3,7 @@ import { ImageRepository } from 'src/modules/database/repositories/imageReposito
 import { ResourceCategoryRepository } from 'src/modules/database/repositories/resourceCategoryRepository.service';
 import { ResourceRepository } from '../../modules/database/repositories/resourceRepository.service';
 import { FirestorageService } from '../firestorage/firestorage.service';
+import { Resource } from 'src/models/resource.entity';
 @Injectable()
 export class ResourceService {
 
@@ -22,9 +23,19 @@ export class ResourceService {
 
       return resource;
    }
-
+   async updateOfferApprovedStatus(id: number) {
+      const resource = await this.resourceRepository.getById(id) as Resource;
+      const updateData = { active: !resource.active};
+      console.log(resource, updateData)
+      return await this.resourceRepository.update(id, updateData)
+   }
    async getAll() {
       const resources = await this.resourceRepository.getAll()
+      return resources;
+   }
+
+   async getAllActive() {
+      const resources = await this.resourceRepository.getAllActive()
       return resources;
    }
 

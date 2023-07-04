@@ -1,4 +1,4 @@
-import {Body, Controller, Get, HttpException, HttpStatus, Post, Request, Response, Res, UseGuards, Put, Param, ParseIntPipe, Delete, UseInterceptors, UploadedFile, BadRequestException} from '@nestjs/common';
+import {Body, Controller, Get, HttpException, HttpStatus, Post, Request, Response, Res, UseGuards, Put, Param, ParseIntPipe, Delete, UseInterceptors, UploadedFile, BadRequestException, Patch} from '@nestjs/common';
 
 import { ResourceService } from './resource.service';
 import { ApiTags, ApiParam, ApiResponse } from '@nestjs/swagger';
@@ -36,7 +36,12 @@ export class ResourceController {
       return await this.resourceService.getAll();
     }
 
-    
+    @Get('all/active')
+    @ApiResponse ({status: 500, description: 'Server Error'})
+    @ApiResponse({status: 200, description: 'Correct', type: resourceDto})
+    async getAllActive() {
+      return await this.resourceService.getAllActive();
+    }
     // @UseGuards(JwtAuthGuard)
     @Get(':id')
     @ApiParam({name: 'id', required: true, description: 'Record Identifier'})
@@ -48,6 +53,15 @@ export class ResourceController {
     }
 
     
+    @Patch(':id/change-approved-status')
+    @ApiParam({name: 'id', required: true, description: 'Record Identifier'})
+    @ApiResponse ({status: 500, description: 'Server Error'})
+    @ApiResponse({status: 404, description: 'Record not found'})
+    @ApiResponse({status: 200, description: 'Correct',  type: resourceDto})
+    async changeApprovedStatus(@Param('id', ParseIntPipe) id: number) {
+      return await this.resourceService.updateOfferApprovedStatus(id);
+    }
+
     @UseGuards(JwtAuthGuard)
     @Put('update/:id')
     @ApiParam({name: 'id', required: true, description: 'Record Identifier'})
