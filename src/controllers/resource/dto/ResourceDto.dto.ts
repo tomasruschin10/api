@@ -23,33 +23,36 @@ export class resourceCreateDto {
     image: Express.Multer.File
 
     @ApiProperty()
-    url: string;
+    url?: string;
 
     @ApiProperty()
-    html: string;
+    html?: string;
 }
 
 export class resourceUpdateDto {
     @ApiProperty()
-    name: string;
+    name?: string;
 
     @ApiProperty()
     user_id: number;
 
     @ApiProperty()
-    subject_id: number;
+    subject_id?: number;
 
     @ApiProperty()
-    resource_category_id: number;
+    resource_category_id?: number;
 
     @ApiProperty()
     image: Express.Multer.File
+    
+    @ApiProperty()
+    active?: boolean
 
     @ApiProperty()
-    url: string;
+    url?: string;
 
     @ApiProperty()
-    html: string;
+    html?: string;
 } 
 
 export class resourceDto {

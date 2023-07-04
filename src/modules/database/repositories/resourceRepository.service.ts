@@ -20,6 +20,15 @@ export class ResourceRepository {
         return resource
     }
 
+    async getAllActive(): Promise<Resource[] | string> {
+        return await this.resourcesRepository.createQueryBuilder('r')
+            .innerJoinAndSelect('r.user', 'ru')
+            .innerJoinAndSelect('r.image', 'ri')
+            .innerJoinAndSelect('r.resourceCategory', 'rr')
+            .where('r.active = true')
+            .orderBy('r.id', 'DESC')
+            .getMany()
+    }
     async getAll(): Promise<Resource[] | string> {
         return await this.resourcesRepository.createQueryBuilder('r')
             .innerJoinAndSelect('r.user', 'ru')
@@ -28,7 +37,6 @@ export class ResourceRepository {
             .orderBy('r.id', 'DESC')
             .getMany()
     }
-
 
     async getById(id): Promise<Resource | string> {
         const resource = await this.resourcesRepository.createQueryBuilder('r')

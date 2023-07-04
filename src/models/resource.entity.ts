@@ -32,6 +32,9 @@ export class Resource {
   @Column()
   resource_category_id: number;
 
+  @Column({ nullable: true, default: false })
+  active: boolean
+
   @CreateDateColumn({type: "timestamp"})
   created_at: Moment
 
