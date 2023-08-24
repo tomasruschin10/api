@@ -38,6 +38,30 @@ export class ResourceRepository {
             .getMany()
     }
 
+    async getAllFirstByCareer(): Promise<Resource[] | string> {
+        const subquery = this.resourcesRepository.createQueryBuilder('r_sub')
+            .select('r_sub.subject_id, MAX(r_sub.id)', 'max_id')
+            .groupBy('r_sub.subject_id');
+    
+        const subqueryAlias = subquery.getQuery();
+    
+        const query = this.resourcesRepository.createQueryBuilder('r')
+            .innerJoinAndSelect('r.user', 'ru')
+            .innerJoinAndSelect('r.image', 'ri')
+            .innerJoinAndSelect('r.resourceCategory', 'rr')
+            .innerJoin(
+                `(${subqueryAlias})`,
+                'sub',
+                'r.id = sub.max_id'
+            )
+            .orderBy('r.id', 'DESC')
+            .getMany();
+    
+        return query;
+    }
+    
+    
+
     async getById(id): Promise<Resource | string> {
         const resource = await this.resourcesRepository.createQueryBuilder('r')
             .innerJoinAndSelect('r.user', 'ru')

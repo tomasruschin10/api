@@ -27,7 +27,14 @@ export class ResourceController {
       return await this.resourceService.create(createBody, fileUploaded);
     }
 
-    
+
+    @Get('all/first')
+    @ApiResponse ({status: 500, description: 'Server Error'})
+    @ApiResponse({status: 200, description: 'Correct', type: resourceDto})
+    async getFirstByCareer() {
+      return await this.resourceService.getFirstByCareer();
+    }
+
     // @UseGuards(JwtAuthGuard)
     @Get('all')
     @ApiResponse ({status: 500, description: 'Server Error'})

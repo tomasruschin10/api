@@ -34,6 +34,11 @@ export class ResourceService {
       return resources;
    }
 
+   async getFirstByCareer() {
+      const resources = await this.resourceRepository.getAllFirstByCareer()
+      return resources;
+   }
+
    async getAllActive() {
       const resources = await this.resourceRepository.getAllActive()
       return resources;
