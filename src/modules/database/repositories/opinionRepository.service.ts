@@ -83,11 +83,15 @@ export class OpinionRepository {
 
 
     async getById(id): Promise<Opinion | any> {
-        const opinion = await this.opinionRepository.createQueryBuilder('o')
-            .leftJoinAndSelect('o.opinionTags', 'ot')
-            .leftJoinAndSelect('ot.tag', 't')
-            .where(`o.id = ${id}`)
-            .getOne()
+        const opinion =  await this.opinionRepository
+        .createQueryBuilder('o')
+        .leftJoinAndSelect('o.opinionTags', 'ot')
+        .leftJoinAndSelect('ot.tag', 't')
+        .leftJoinAndSelect('o.subject', 's')
+        .loadRelationCountAndMap('s.opinionsCount', 's.opinions')
+        .where(`o.id = ${id}`)
+        .getOne();
+      
         if (!opinion) {
             throw new HttpException('error! record not found', HttpStatus.NOT_FOUND);
         }
