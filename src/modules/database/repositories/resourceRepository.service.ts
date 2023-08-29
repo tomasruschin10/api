@@ -48,6 +48,7 @@ export class ResourceRepository {
         const query = this.resourcesRepository.createQueryBuilder('r')
             .innerJoinAndSelect('r.user', 'ru')
             .innerJoinAndSelect('r.image', 'ri')
+            .innerJoinAndSelect('r.subject', 'rs')
             .innerJoinAndSelect('r.resourceCategory', 'rr')
             .innerJoin(
                 `(${subqueryAlias})`,

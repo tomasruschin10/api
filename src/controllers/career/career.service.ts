@@ -22,9 +22,17 @@ export class CareerService {
       return career;
    }
 
-   async getAll(){
-      const careers = await this.careerRepository.getAll()
-      return careers;
+   async getAll({role, filterByUserRole} : {role?: string, filterByUserRole?: string}) {
+
+
+      if(filterByUserRole) {
+         //TODO: get by role
+         return await this.careerRepository.getAll()
+      }
+
+      return await this.careerRepository.getAll()
+
+
    }
 
    async getById(id:number){

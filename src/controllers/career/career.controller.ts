@@ -1,4 +1,4 @@
-import {Body, Controller, Get, HttpException, HttpStatus, Post, Request, Response, Res, UseGuards, Put, Param, ParseIntPipe, Delete, UseInterceptors, UploadedFile, BadRequestException} from '@nestjs/common';
+import {Body, Controller, Get, HttpException, HttpStatus, Post, Request, Response, Res, UseGuards, Put, Param, ParseIntPipe, Delete, UseInterceptors, UploadedFile, BadRequestException, Headers, Query} from '@nestjs/common';
 
 import { CareerService } from './career.service';
 import { ApiTags, ApiParam, ApiResponse } from '@nestjs/swagger';
@@ -7,7 +7,7 @@ import { careerBody } from './interfaces/career.interfaces';
 import { careerDto, careerCreateDto, careerUpdateDto } from './dto/CareerDto.dto';
 import { FirestorageService } from '../firestorage/firestorage.service';
 import { FileInterceptor } from '@nestjs/platform-express';
-
+import * as jwt from 'jsonwebtoken';
 @ApiTags('Career')
 @Controller('career')
 export class CareerController {
@@ -28,12 +28,26 @@ export class CareerController {
     }
 
     
-    // @UseGuards(JwtAuthGuard)
+    @UseGuards(JwtAuthGuard)
     @Get('all')
     @ApiResponse ({status: 500, description: 'Server Error'})
     @ApiResponse({status: 200, description: 'Correct', type: careerDto})
-    async getAll() {
-      return await this.careerService.getAll();
+    async getAll(@Body() req, @Headers() header, @Response() res, @Query('filterByUser') filterByUserRole) {
+      const data: any = jwt.decode(header.authorization.replace('Bearer ', ''));
+      req.user_id = data.userData.id
+
+      try {
+        const role = data.userData.userRole[0].role.name
+        console.log(role)
+
+
+        const careers = await this.careerService.getAll({role, filterByUserRole});
+        return res.json(careers);
+
+      } catch (error) {
+        console.log("ERROR: ", error)
+        return res.status(400).json({message: "rol no encontrado"});
+      }
     }
 
     
