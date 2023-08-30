@@ -34,6 +34,14 @@ export class SubjectController {
       return await this.subjectService.getAll(data.userData.career_id);
     }
 
+    @UseGuards(JwtAuthGuard)
+    @Get('career/:id')
+    @ApiResponse ({status: 500, description: 'Server Error'})
+    @ApiResponse({status: 200, description: 'Correct', type: subjectDto})
+    async getByCareer(@Headers() header, @Param('id', ParseIntPipe) id: number) {
+      const data : any = jwt.decode(header.authorization.replace('Bearer ', ''));
+      return await this.subjectService.getAll(id);
+    }
     
     @UseGuards(JwtAuthGuard)
     @Get(':id')
