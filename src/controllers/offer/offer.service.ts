@@ -28,6 +28,9 @@ export class OfferService {
       };
 
 
+      if(request?.name){
+         data.email = request.email;
+      }
 
       if(request?.name){
          data.name = request.name;
