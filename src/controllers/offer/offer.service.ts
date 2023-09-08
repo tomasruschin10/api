@@ -28,7 +28,7 @@ export class OfferService {
       };
 
 
-      if(request?.name){
+      if(request?.email){
          data.email = request.email;
       }
 
