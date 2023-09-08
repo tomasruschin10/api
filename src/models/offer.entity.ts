@@ -1,5 +1,5 @@
 
-import { Entity, Column, PrimaryGeneratedColumn, CreateDateColumn, UpdateDateColumn, OneToMany, JoinColumn, ManyToOne } from 'typeorm';
+import { Entity, Column, PrimaryGeneratedColumn, CreateDateColumn, UpdateDateColumn, JoinColumn, ManyToOne } from 'typeorm';
 import { Moment } from 'moment';
 import { Image } from './image.entity';
 import { OfferCategory } from './offerCategory.entity';
@@ -22,7 +22,7 @@ export class Offer {
 
     @Column({ nullable: true, type: 'longtext' })
     description: string;
-
+    
     @Column({ nullable: true })
     url: string;
 
@@ -46,6 +46,9 @@ export class Offer {
     
     @Column({nullable: true})
     phone?: string;
+
+    @Column({nullable: true})
+    email?: string
 
     @CreateDateColumn({ type: "timestamp" })
     created_at: Moment

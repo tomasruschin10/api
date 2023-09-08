@@ -24,9 +24,13 @@ export class OfferService {
          description: request.description,
          image_id: request.image_id,
          career_id: parseInt(request.career_id),
+         url: request.url
       };
 
 
+      if(request?.email){
+         data.email = request.email;
+      }
 
       if(request?.name){
          data.name = request.name;
@@ -41,6 +45,7 @@ export class OfferService {
      if(request?.partner_id) {
       data.partner_id = request.partner_id;
      }
+
 
       const offer = await this.offerRepository.create(data)
       if (!offer) throw new BadRequestException(['incorrect data'])     
