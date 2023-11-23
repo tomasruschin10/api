@@ -5,11 +5,11 @@
     "url": "SERVER_URL"
   },
   "database": {
-    "host": "DB_HOST",
-    "port": "DB_PORT",
-    "username": "DB_USERNAME",
-    "password": "DB_PASSWORD",
-    "database": "DB_DATABASE"
+    "host": "db",
+    "port": "3306",
+    "username": "user",
+    "password": "user",
+    "database": "masfadu"
   },
   "enviroment": "NODE_ENV"
 }
