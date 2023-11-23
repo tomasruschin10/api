@@ -1,8 +1,8 @@
 import { Module } from '@nestjs/common';
 import { AuthService } from './auth.service';
 import { PassportModule } from '@nestjs/passport';
-import { LocalStrategy } from './local.strategy';
-import {AuthController} from "./auth.controller";
+import { LocalStrategy } from '@app/auth/local.strategy';
+import { AuthController } from "@app/auth/auth.controller";
 import { JwtModule } from '@nestjs/jwt';
 import * as config from "config";
 import { JwtStrategy } from './jwt.strategy';
@@ -19,6 +19,6 @@ import { MailPasswordCodeHtml } from 'src/utils/html/mail_password_code';
             signOptions: { expiresIn: config.get("globals.expJWT") },
         }), SharedModule],
     providers: [AuthService, LocalStrategy, JwtStrategy, FirestorageService, MailPasswordHtml, MailPasswordCodeHtml],
-    exports:[JwtStrategy]
+    exports: [JwtStrategy]
 })
-export class AuthModule {}
+export class AuthModule { }
