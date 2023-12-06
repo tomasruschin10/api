@@ -27,7 +27,7 @@ export class OfferCategoryController {
     
     @UseGuards(JwtAuthGuard)
     @Get('all')
-    @ApiResponse ({status: 500, description: 'Server Error'})
+    @ApiResponse ({status: 500, description: 'Server Errorrr'})
     @ApiResponse({status: 200, description: 'Correct', type: offerCategoryDto})
     async getAll(@Headers() header, @Query() query: {search: string}) {
       const data : any = jwt.decode(header.authorization.replace('Bearer ', ''));
