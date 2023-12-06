@@ -15,19 +15,26 @@ export class OfferController {
   
     constructor(private offerService: OfferService, private firestorageService: FirestorageService) {}
 
-    @UseGuards(JwtAuthGuard)
     @Post('create')
-    @ApiResponse ({status: 500, description: 'Server Error'})
-    @ApiResponse({status: 400, description: 'Incorrect Data'})
-    @ApiResponse({status: 200, description: 'Correct Registration', type: offerDto})
+    @UseGuards(JwtAuthGuard)
     @UseInterceptors(FileInterceptor('image'))
-    async create(@Body() req : offerCreateDto, @UploadedFile() file: Express.Multer.File) {
-
-      const createBody: offerBody = req;
-      let fileUploaded = await this.uploadFile(file)
+    @ApiResponse({ status: 500, description: 'Server Error' })
+    @ApiResponse({ status: 400, description: 'Incorrect Data' })
+    @ApiResponse({ status: 200, description: 'Correct Registration', type: offerDto })
+    async create(@Body() req: offerCreateDto, @UploadedFile() file: Express.Multer.File) {
+      try {
+        const createBody: offerBody = req;
+        let fileUploaded = await this.uploadFile(file);
       return await this.offerService.create(createBody, fileUploaded);
+      } catch (error) {
+        // Aquí capturas el error y devuelves una respuesta personalizada
+        return new HttpException({
+        status: HttpStatus.INTERNAL_SERVER_ERROR,
+        error: 'Error al procesar la solicitud',
+        message: error.message // Aquí puedes incluir detalles del error
+        }, HttpStatus.INTERNAL_SERVER_ERROR);
+      }
     }
-
 
     @Patch(':id/change-approved-status')
     @ApiParam({name: 'id', required: true, description: 'Record Identifier'})
@@ -128,7 +135,7 @@ export class OfferController {
         let tm = Date.now();
         return await this.firestorageService.uploadFile('offers', file, tm);
       }else{
-        throw new BadRequestException(['Image file is required'])
+        throw new BadRequestException(['Image file is required', file])
       }
     }
 
