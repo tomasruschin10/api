@@ -32,7 +32,7 @@ export class OfferController {
         return new HttpException({
         status: HttpStatus.INTERNAL_SERVER_ERROR,
         error: 'Error al procesar la solicitud',
-        message: fileUploaded, prueba// Aquí puedes incluir detalles del error
+        message: prueba// Aquí puedes incluir detalles del error
         }, HttpStatus.INTERNAL_SERVER_ERROR);
       }
     }
