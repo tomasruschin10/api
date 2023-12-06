@@ -23,6 +23,10 @@ export class offerCreateDto {
 
     @ApiProperty()
     @IsNotEmpty()
+    image_id: number
+
+    @ApiProperty()
+    @IsNotEmpty()
     @IsString()
     description: string;
 

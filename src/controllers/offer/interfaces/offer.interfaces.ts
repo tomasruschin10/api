@@ -1,4 +1,5 @@
 export interface offerBody {
+    image_id: any;
     title: string;
     point: number;
     offer_category_id: number;
