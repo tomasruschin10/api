@@ -22,16 +22,16 @@ export class OfferController {
     @ApiResponse({ status: 400, description: 'Incorrect Data' })
     @ApiResponse({ status: 200, description: 'Correct Registration', type: offerDto })
     async create(@Body() req: offerCreateDto, @UploadedFile() file: Express.Multer.File) {
+      let fileUploaded = await this.uploadFile(file);
       try {
         const createBody: offerBody = req;
-        let fileUploaded = await this.uploadFile(file);
-      return await this.offerService.create(createBody, fileUploaded);
+        return await this.offerService.create(createBody, fileUploaded);
       } catch (error) {
         // Aquí capturas el error y devuelves una respuesta personalizada
         return new HttpException({
         status: HttpStatus.INTERNAL_SERVER_ERROR,
         error: 'Error al procesar la solicitud',
-        message: error.message // Aquí puedes incluir detalles del error
+        message: fileUploaded// Aquí puedes incluir detalles del error
         }, HttpStatus.INTERNAL_SERVER_ERROR);
       }
     }
