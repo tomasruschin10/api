@@ -21,33 +21,44 @@ export class OfferCategoryRepository {
         return offerCategory
     }
 
-    async getAll(role_id: number, career_id: number, search: string): Promise<OfferCategory[] | string> {
-        let where = 'o.id != 1 AND o.id != 2';
-        let query;
-      
+    async getAll(
+        career_id: number,
+        search: string
+      ): Promise<OfferCategory[] | string> {
+        // Inicializar el constructor de consultas
+        const queryBuilder = this.offerCategorysRepository
+          .createQueryBuilder("o")
+          .leftJoinAndSelect("o.offers", "oo")
+          .leftJoinAndSelect("oo.image", "ooi")
+          .leftJoinAndSelect("oo.partner", "oop");
+    
+        // Excluir categorías específicas
+        queryBuilder.where("o.id NOT IN (:...excludedIds)", {
+          excludedIds: [1, 2],
+        });
+    
+        // Filtrar por career_id si se proporciona
         if (career_id) {
-          where += ` AND oo.career_id = ${career_id}`;
+          queryBuilder.andWhere("oo.career_id = :career_id", { career_id });
         }
+    
+        // Filtrar por término de búsqueda si se proporciona
         if (search) {
-          where += ` AND (oo.title LIKE '%${search}%' OR oo.description LIKE '%${search}%')`;
+          const searchQuery = search.trim();
+          if (searchQuery.length > 0) {
+            queryBuilder.andWhere(
+              "(oo.title LIKE :search OR oo.description LIKE :search)",
+              { search: `%${searchQuery}%` }
+            );
+          }
         }
-      
-        if (role_id == 1) {
-          query = await this.offerCategorysRepository.createQueryBuilder('o')
-            .getMany();
-        } else {
-          query = await this.offerCategorysRepository.createQueryBuilder('o')
-            .leftJoinAndSelect('o.offers', 'oo')
-            .leftJoinAndSelect('oo.image', 'ooi')
-            .leftJoinAndSelect('oo.partner', 'oop')
-            .where(where)
-            .orderBy('o.id', 'DESC')
-            .getMany();
-        }
-      
-        // Filtrar categorías que no tienen ofertas aprobadas
-        const categoriesWithApprovedOffers = query.filter(category => category.offers.some(offer => offer.approved));
-      
+    
+        const queryResult = await queryBuilder.orderBy("o.id", "DESC").getMany();
+    
+        const categoriesWithApprovedOffers = queryResult.filter((category) =>
+          category.offers.some((offer) => offer.approved)
+        );
+    
         return categoriesWithApprovedOffers;
       }
       
