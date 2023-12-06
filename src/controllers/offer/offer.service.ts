@@ -42,11 +42,6 @@ export class OfferService {
          data.phone = request.phone;
       }
 
-     if(request?.partner_id) {
-      data.partner_id = request.partner_id;
-     }
-
-
       const offer = await this.offerRepository.create(data)
       if (!offer) throw new BadRequestException(['incorrect data'])     
 
