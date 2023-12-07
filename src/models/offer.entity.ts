@@ -29,6 +29,9 @@ export class Offer {
     @Column()
     career_id: number;
 
+    @Column({nullable: true})
+    partner_id: number;
+
     @Column()
     image_id: number;
     
@@ -67,6 +70,13 @@ export class Offer {
         referencedColumnName: 'id'
     })
     image: Image;
+
+    @ManyToOne(() => Partner, partner => partner.id, { onDelete: 'CASCADE'})
+    @JoinColumn({
+        name: 'partner_id',
+        referencedColumnName: 'id'
+    })
+    partner: Partner;
 
     @ManyToOne(() => Career, career => career.id, { onDelete: 'CASCADE' })
     @JoinColumn({
