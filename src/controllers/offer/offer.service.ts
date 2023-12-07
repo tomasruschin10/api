@@ -67,6 +67,8 @@ export class OfferService {
 
    async update(id:number, request: any, file){
 
+      request.partner_id = 0
+
       const offer = await this.offerRepository.update(id, request)
 
       if (file) {

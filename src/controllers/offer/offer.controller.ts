@@ -65,7 +65,7 @@ export class OfferController {
     @UseInterceptors(FileInterceptor('image'))
     async update(@Param('id', ParseIntPipe) id: number, @Body() req : offerUpdateDto, @UploadedFile() file: Express.Multer.File) {
       const updateBody: offerBody = req;
-      let fileUploaded = await this.uploadFile(file);
+      let fileUploaded = file ? await this.uploadFile(file) : null
       return await this.offerService.update(id, updateBody, fileUploaded);
     }
     
