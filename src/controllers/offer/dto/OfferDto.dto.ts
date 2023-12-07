@@ -54,9 +54,6 @@ export class offerUpdateDto {
     offer_category_id: number;
 
     @ApiProperty()
-    partner_id: number
-
-    @ApiProperty()
     career_id: number
 
     @ApiProperty()
