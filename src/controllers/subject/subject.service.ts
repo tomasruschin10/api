@@ -70,7 +70,7 @@ export class SubjectService {
    }
 
    async update(request: any){
-      let created = {}
+      const created: any[] = [];
       for (let i = 0; i < request.data.length; i++) {
          let subject
          let subjectParents = []
@@ -81,22 +81,22 @@ export class SubjectService {
             url: request.data[i].url,
             prefix: request.data[i].prefix
          }
-         for (let parent of request.data[i].subjectParent) {
-            if (parent.key || parent.key == 0 || parent.id) {
-               if (parent.key || parent.key == 0) {
-                  subjectParents.push(created[`${parent.key}`].id)
-               }
-               if (parent.id) {
-                  subjectParents.push(parent.id)
-               }
-            }
-         }
+         // for (let parent of request.data[i].subjectParent) {
+         //    if (parent.key || parent.key == 0 || parent.id) {
+         //       if (parent.key || parent.key == 0) {
+         //          subjectParents.push(created[`${parent.key}`].id)
+         //       }
+         //       if (parent.id) {
+         //          subjectParents.push(parent.id)
+         //       }
+         //    }
+         // }
          if (request.data[i].id) {
             subject = await this.subjectRepository.update(request.data[i].id, body)
          }else{
             subject = await this.subjectRepository.create(body) 
          }
-         created[`${i}`] = subject
+         created.push(subject);
          // save parents
          // await this.subjectParentRepository.deleteMany(request.data[i].deleteParent, subject.id)
          // for (let subjectParent of subjectParents) {
