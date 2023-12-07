@@ -24,16 +24,7 @@ export class OfferController {
     async create(@Body() req: offerCreateDto, @UploadedFile() file: Express.Multer.File) {
       let fileUploaded = await this.uploadFile(file);
       const createBody: offerBody = req;
-      try {
-        return await this.offerService.create(createBody, fileUploaded);
-      } catch (error) {
-        // Aquí capturas el error y devuelves una respuesta personalizada
-        return new HttpException({
-        status: HttpStatus.INTERNAL_SERVER_ERROR,
-        error: 'Error al procesar la solicitud',
-        message: fileUploaded, createBody// Aquí puedes incluir detalles del error
-        }, HttpStatus.INTERNAL_SERVER_ERROR);
-      }
+      return await this.offerService.create(createBody, fileUploaded);
     }
 
     @Patch(':id/change-approved-status')
