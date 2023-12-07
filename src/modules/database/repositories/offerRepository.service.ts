@@ -68,6 +68,7 @@ export class OfferRepository {
             throw new HttpException('error! record not found', HttpStatus.NOT_FOUND);
 
         offer = await this.sharedService.updateObject(offer, request)
+        console.log("updateObject ",request,offer)
         await this.offersRepository.save(offer);
 
         return offer;
