@@ -35,9 +35,6 @@ export class OfferService {
       if (request?.description) {
          data.description = request.description;
       }
-      if (request?.partner_id) {
-         data.partner_id = request.partner_id;
-      }
       if(request?.company){
          data.company = request.company;
       }
