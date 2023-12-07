@@ -98,18 +98,16 @@ export class SubjectService {
          }
          created[`${i}`] = subject
          // save parents
-         await this.subjectParentRepository.deleteMany(request.data[i].deleteParent, subject.id)
-         for (let subjectParent of subjectParents) {
-            await this.subjectParentRepository.create({
-               subject_id: subject.id,
-               subject_parent_id: subjectParent
-            })
-         }
+         // await this.subjectParentRepository.deleteMany(request.data[i].deleteParent, subject.id)
+         // for (let subjectParent of subjectParents) {
+         //    await this.subjectParentRepository.create({
+         //       subject_id: subject.id,
+         //       subject_parent_id: subjectParent
+         //    })
+         // }
       }
-
-      await this.subjectRepository.deleteMany(request.deleteData)
-
-      return { created, hola: 'hola' };
+      // await this.subjectRepository.deleteMany(request.deleteData)
+      return created
    }
 
    async delete(id: number){
