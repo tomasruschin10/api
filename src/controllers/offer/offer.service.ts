@@ -21,19 +21,19 @@ export class OfferService {
       const data: any = {
          title: request.title,
          offer_category_id: request.offer_category_id,
-         description: request.description,
          image_id: request.image_id,
          career_id: parseInt(request.career_id),
          url: request.url
       };
 
-
       if(request?.email){
          data.email = request.email;
       }
-
       if(request?.name){
          data.name = request.name;
+      }
+      if (request?.description) {
+         data.description = request.description;
       }
       if(request?.company){
          data.company = request.company;
