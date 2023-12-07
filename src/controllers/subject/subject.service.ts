@@ -109,7 +109,7 @@ export class SubjectService {
 
       await this.subjectRepository.deleteMany(request.deleteData)
 
-      return created;
+      return { created, hola: 'hola' };
    }
 
    async delete(id: number){
