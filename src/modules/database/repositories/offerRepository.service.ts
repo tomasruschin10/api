@@ -56,7 +56,7 @@ export class OfferRepository {
             .where(`o.id = ${id}`)
             .getOne()
         if (!offer) {
-            throw new HttpException('error! record not found', HttpStatus.NOT_FOUND);
+            throw new HttpException('error! recordt not found', HttpStatus.NOT_FOUND);
         }
         return offer;
     }
