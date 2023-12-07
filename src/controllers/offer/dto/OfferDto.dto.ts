@@ -15,9 +15,6 @@ export class offerCreateDto {
     offer_category_id: number;
 
     @ApiProperty()
-    partner_id: number
-
-    @ApiProperty()
     @IsNotEmpty()
     career_id: number
 
