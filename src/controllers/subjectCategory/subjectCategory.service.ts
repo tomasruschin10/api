@@ -17,11 +17,10 @@ export class SubjectCategoryService {
       return subjectCategory;
    }
 
-   async getAll(data, id) {
+   async getAll(data: any, id: any) {
       let subjectCategorys = await this.subjectCategoryRepository.getAll(id)
-      if (data.userData.userRole[0].role_id == 2) {
-         subjectCategorys = await this.addStudentExtraInfo(data.userData, subjectCategorys)
-      }
+      subjectCategorys = await this.addStudentExtraInfo(data.userData, subjectCategorys)
+
       return subjectCategorys;
    }
 
