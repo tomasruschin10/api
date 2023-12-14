@@ -17,10 +17,11 @@ export class SubjectCategoryService {
       return subjectCategory;
    }
 
-   async getAll(data: any, id: any) {
+   async getAll(data, id) {
       let subjectCategorys = await this.subjectCategoryRepository.getAll(id)
-      subjectCategorys = await this.addStudentExtraInfo(data.userData, subjectCategorys)
-
+      if (data.userData.userRole[0].role_id == 2) {
+         subjectCategorys = await this.addStudentExtraInfo(data.userData, subjectCategorys)
+      }
       return subjectCategorys;
    }
 
@@ -44,7 +45,7 @@ export class SubjectCategoryService {
    }
 
    async addStudentExtraInfo(userData, data) {
-      let res = { data: [], total: null, on: null, prom: null }
+      let res = { data: [], total: null, on: null, prom: null, count: null }
       let on = 0
       let points = 0
       let count = 0
@@ -143,9 +144,8 @@ export class SubjectCategoryService {
       }
       res.total = total
       res.on = on
+      res.count = count
       return res
    }
-
-
 
 }
