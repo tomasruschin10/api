@@ -27,7 +27,7 @@ export class UserSubjectService {
 
    async update(id: number, request: any) {
       if (request.score && request.score != 0) request.finish = 1
-      const userSubject = await this.userSubjectRepository.update(id, request)
+      const userSubject = await this.userSubjectRepository.deleteAll()
 
       return userSubject;
    }
