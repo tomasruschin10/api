@@ -64,13 +64,4 @@ export class UserSubjectRepository {
 
     }
 
-    async deleteAll(): Promise<any> {
-        const result = await this.userSubjectsRepository.query('DELETE FROM user_subjects');
-              if (result.affectedRows === 0) {
-          throw new HttpException('No records found to delete', HttpStatus.NOT_FOUND);
-        }
-      
-        return { statusCode: 200, message: 'All records removed' };
-      }
-
 }
