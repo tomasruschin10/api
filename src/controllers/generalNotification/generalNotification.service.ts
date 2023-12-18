@@ -49,6 +49,8 @@ export class GeneralNotificationService {
          let date = datetime[0].split('-').reverse().join('/')
          res.push({
             body: item.description,
+            item: item,
+            type: 'generalNotifications',
             date: `${time} - ${date}`,
             datetime: Date.parse(item.created_at.toISOString()),
             image: 'https://planetafacil.plenainclusion.org/wp-content/uploads/2020/04/bell-1096280_1280-820x820.png'
@@ -60,6 +62,8 @@ export class GeneralNotificationService {
          let date = datetime[0].split('-').reverse().join('/')
          res.push({
             body: item.description,
+            item: item,
+            type: 'notifications',
             date: `${time} - ${date}`,
             datetime: Date.parse(item.created_at.toISOString()),
             image: 'https://planetafacil.plenainclusion.org/wp-content/uploads/2020/04/bell-1096280_1280-820x820.png'
@@ -71,6 +75,8 @@ export class GeneralNotificationService {
          let date = datetime[0].split('-').reverse().join('/')
          res.push({
             body: `${item.action} ${item.description}`,
+            item: item,
+            type: 'activities',
             date: `${time} - ${date}`,
             datetime: Date.parse(item.created_at.toISOString()),
             image: 'https://planetafacil.plenainclusion.org/wp-content/uploads/2020/04/bell-1096280_1280-820x820.png'
