@@ -41,8 +41,7 @@ export class OpinionService {
       let subject = await this.subjectRepository.getById(opinion.subject_id)
       let activity = {
          user_id: user_id,
-         action: 'Comentaste',
-         prueba: subject,
+         action: subject,
          description: `en la materia ${subject.name}`,
          type: 'Comentario'
       }
