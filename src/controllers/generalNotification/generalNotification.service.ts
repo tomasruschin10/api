@@ -1,108 +1,124 @@
-import { HttpStatus, Injectable, HttpException, BadRequestException } from '@nestjs/common';
-import { ActivityRepository } from 'src/modules/database/repositories/activityRepository.service';
-import { NotificationRepository } from 'src/modules/database/repositories/notificationRepository.service';
-import { UserRepository } from 'src/modules/database/repositories/userRepository.service';
-import { SharedService } from 'src/modules/shared/shared.service';
-import { GeneralNotificationRepository } from '../../modules/database/repositories/generalNotificationRepository.service';
+import {
+  HttpStatus,
+  Injectable,
+  HttpException,
+  BadRequestException,
+} from "@nestjs/common";
+import { ActivityRepository } from "src/modules/database/repositories/activityRepository.service";
+import { NotificationRepository } from "src/modules/database/repositories/notificationRepository.service";
+import { UserRepository } from "src/modules/database/repositories/userRepository.service";
+import { SharedService } from "src/modules/shared/shared.service";
+import { GeneralNotificationRepository } from "../../modules/database/repositories/generalNotificationRepository.service";
 @Injectable()
 export class GeneralNotificationService {
+  constructor(
+    private readonly generalNotificationRepository: GeneralNotificationRepository,
+    private readonly notificationRepository: NotificationRepository,
+    private readonly activityRepository: ActivityRepository,
+    private readonly userRepository: UserRepository,
+    private readonly sharedService: SharedService
+  ) {}
 
-    constructor(
-        private readonly generalNotificationRepository: GeneralNotificationRepository,
-        private readonly notificationRepository: NotificationRepository,
-        private readonly activityRepository: ActivityRepository,
-        private readonly userRepository: UserRepository,
-        private readonly sharedService: SharedService
-    ) {}
+  async create(request: any) {
+    const generalNotification = await this.generalNotificationRepository.create(
+      request
+    );
+    if (!generalNotification) throw new BadRequestException(["incorrect data"]);
 
-    async create(request: any){
+    let users = await this.userRepository.getUsersTokens();
+    let notification = {
+      title: generalNotification.title,
+      message: generalNotification.description,
+      user_to: null,
+    };
+    for (let user of users) {
+      await this.sharedService.sendNotification(notification, user);
+    }
 
-      const generalNotification = await this.generalNotificationRepository.create(request)
-      if (!generalNotification) throw new BadRequestException(['incorrect data'])     
+    return generalNotification;
+  }
 
-      let users = await this.userRepository.getUsersTokens();
-      let notification = {
-         title: generalNotification.title,
-         message: generalNotification.description,
-         user_to: null
-      }
-      for (let user of users) {
-         await this.sharedService.sendNotification(notification, user)
-      }
+  async getAll() {
+    const generalNotifications =
+      await this.generalNotificationRepository.getAll();
+    return generalNotifications;
+  }
 
-      return generalNotification;
-   }
+  async getUserNotification(id: number) {
+    let generalNotifications =
+      await this.generalNotificationRepository.getLimit();
+    let notifications = await this.notificationRepository.getByUser(id);
+    let activities = await this.activityRepository.getByUser(id);
+    let res = [];
+    for (let item of generalNotifications) {
+      let datetime = item.created_at
+        .toISOString()
+        .substring(0, 16)
+        .split(/T/gim);
+      let time = datetime[1];
+      let date = datetime[0].split("-").reverse().join("/");
+      res.push({
+        body: item.description,
+        title: item.title,
+        date: `${time} - ${date}`,
+        datetime: Date.parse(item.created_at.toISOString()),
+        image:
+          "https://planetafacil.plenainclusion.org/wp-content/uploads/2020/04/bell-1096280_1280-820x820.png",
+      });
+    }
+    for (let item of notifications) {
+      let datetime = item.created_at
+        .toISOString()
+        .substring(0, 16)
+        .split(/T/gim);
+      let time = datetime[1];
+      let date = datetime[0].split("-").reverse().join("/");
+      res.push({
+        body: item.description,
+        title: item.title,
+        date: `${time} - ${date}`,
+        datetime: Date.parse(item.created_at.toISOString()),
+        image:
+          "https://planetafacil.plenainclusion.org/wp-content/uploads/2020/04/bell-1096280_1280-820x820.png",
+      });
+    }
+    for (let item of activities) {
+      let datetime = item.created_at
+        .toISOString()
+        .substring(0, 16)
+        .split(/T/gim);
+      let time = datetime[1];
+      let date = datetime[0].split("-").reverse().join("/");
+      res.push({
+        body: `${item.action} ${item.description}`,
+        title: item.title,
+        opinionsCount: item.opinions_count,
+        id: item.subject_id,
+        date: `${time} - ${date}`,
+        datetime: Date.parse(item.created_at.toISOString()),
+        image:
+          "https://planetafacil.plenainclusion.org/wp-content/uploads/2020/04/bell-1096280_1280-820x820.png",
+      });
+    }
 
-   async getAll(){
-      const generalNotifications = await this.generalNotificationRepository.getAll()
-      return generalNotifications;
-   }
+    res.sort((a, b) => {
+      return b.datetime - a.datetime;
+    });
+    return res;
+  }
 
-   async getUserNotification(id:number){
-      let generalNotifications = await this.generalNotificationRepository.getLimit()
-      let notifications = await this.notificationRepository.getByUser(id)
-      let activities = await this.activityRepository.getByUser(id)
-      let res = []
-      for (let item of generalNotifications) {
-         let datetime = item.created_at.toISOString().substring(0,16).split(/T/gmi)
-         let time = datetime[1]
-         let date = datetime[0].split('-').reverse().join('/')
-         res.push({
-            body: item.description,
-            item: item,
-            type: 'generalNotifications',
-            date: `${time} - ${date}`,
-            datetime: Date.parse(item.created_at.toISOString()),
-            image: 'https://planetafacil.plenainclusion.org/wp-content/uploads/2020/04/bell-1096280_1280-820x820.png'
-         })
-      }
-      for (let item of notifications) {
-         let datetime = item.created_at.toISOString().substring(0,16).split(/T/gmi)
-         let time = datetime[1]
-         let date = datetime[0].split('-').reverse().join('/')
-         res.push({
-            body: item.description,
-            item: item,
-            type: 'notifications',
-            date: `${time} - ${date}`,
-            datetime: Date.parse(item.created_at.toISOString()),
-            image: 'https://planetafacil.plenainclusion.org/wp-content/uploads/2020/04/bell-1096280_1280-820x820.png'
-         })
-      }
-      for (let item of activities) {
-         let datetime = item.created_at.toISOString().substring(0,16).split(/T/gmi)
-         let time = datetime[1]
-         let date = datetime[0].split('-').reverse().join('/')
-         res.push({
-            body: `${item.action} ${item.description}`,
-            item: item,
-            type: 'activities',
-            date: `${time} - ${date}`,
-            datetime: Date.parse(item.created_at.toISOString()),
-            image: 'https://planetafacil.plenainclusion.org/wp-content/uploads/2020/04/bell-1096280_1280-820x820.png'
-         })
-      }
+  // async update(id:number, request: any){
 
-      res.sort((a,b) => {
-         return b.datetime - a.datetime
-      })
-      return res
-   }
+  //    const generalNotification = await this.generalNotificationRepository.update(id, request)
 
-   // async update(id:number, request: any){
+  //    return generalNotification;
+  // }
 
-   //    const generalNotification = await this.generalNotificationRepository.update(id, request)
+  async delete(id: number) {
+    const generalNotification = await this.generalNotificationRepository.delete(
+      id
+    );
 
-   //    return generalNotification;
-   // }
-
-   async delete(id: number){
-      const generalNotification = await this.generalNotificationRepository.delete(id)
-
-
-      return {statusCode: 200, message: 'removed'}
-   }
-
-     
-
+    return { statusCode: 200, message: "removed" };
+  }
 }

@@ -44,6 +44,8 @@ export class OpinionService {
       user_id: user_id,
       action: "Comentaste",
       subject_id: subject.id,
+      opinions_count: subject.opinionsCount,
+      title: subject.name,
       description: `en la materia ${subject.name}`,
       type: "Comentario",
     };

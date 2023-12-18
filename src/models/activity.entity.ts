@@ -19,6 +19,12 @@ export class Activity {
 
   @Column({nullable: true})
   subject_id: number;
+  
+  @Column({nullable: true})
+  opinions_count: string;
+
+  @Column({nullable: true})
+  title: string;
 
   @Column({nullable: true})
   type: string;
