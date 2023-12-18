@@ -42,6 +42,7 @@ export class OpinionService {
       let activity = {
          user_id: user_id,
          action: 'Comentaste',
+         prueba: subject,
          description: `en la materia ${subject.name}`,
          type: 'Comentario'
       }
