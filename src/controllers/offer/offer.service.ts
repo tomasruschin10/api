@@ -1,119 +1,120 @@
-import { HttpStatus, Injectable, HttpException, BadRequestException } from '@nestjs/common';
-import { ImageRepository } from 'src/modules/database/repositories/imageRepository.service';
-import { OfferRepository } from '../../modules/database/repositories/offerRepository.service';
-import { FirestorageService } from '../firestorage/firestorage.service';
-import { Offer } from 'src/models/offer.entity';
+import {
+  HttpStatus,
+  Injectable,
+  HttpException,
+  BadRequestException,
+} from "@nestjs/common";
+import { ImageRepository } from "src/modules/database/repositories/imageRepository.service";
+import { OfferRepository } from "../../modules/database/repositories/offerRepository.service";
+import { FirestorageService } from "../firestorage/firestorage.service";
+import { Offer } from "src/models/offer.entity";
 
 @Injectable()
 export class OfferService {
+  constructor(
+    private readonly offerRepository: OfferRepository,
+    private readonly imageRepository: ImageRepository,
+    private firestorageService: FirestorageService
+  ) {}
 
-    constructor(
-        private readonly offerRepository: OfferRepository,
-        private readonly imageRepository: ImageRepository,
-        private firestorageService: FirestorageService
-    ) {}
+  async create(request: any, file) {
+    request.image_id = (await this.imageRepository.create(file)).id;
 
-    async create(request: any, file){
-      request.image_id = (await this.imageRepository.create(file)).id
+    const data: any = {
+      title: request.title,
+      offer_category_id: request.offer_category_id,
+      image_id: request.image_id,
+      career_id: parseInt(request.career_id),
+      user_id: request.userId,
+      url: request.url,
+    };
 
+    if (request?.email) {
+      data.email = request.email;
+    }
+    if (request?.name) {
+      data.name = request.name;
+    }
+    if (request?.description) {
+      data.description = request.description;
+    }
+    if (request?.partner_id) {
+      data.partner_id = request.partner_id;
+    }
+    if (request?.company) {
+      data.company = request.company;
+    }
+    if (request?.phone) {
+      data.phone = request.phone;
+    }
 
+    const offer = await this.offerRepository.create(data);
+    if (!offer) throw new BadRequestException(["incorrect data"]);
 
-      const data: any = {
-         title: request.title,
-         offer_category_id: request.offer_category_id,
-         image_id: request.image_id,
-         career_id: parseInt(request.career_id),
-         url: request.url
-      };
+    return await this.getById(offer.id);
+  }
 
-      if(request?.email){
-         data.email = request.email;
-      }
-      if(request?.name){
-         data.name = request.name;
-      }
-      if (request?.description) {
-         data.description = request.description;
-      }
-      if (request?.partner_id) {
-         data.partner_id = request.partner_id;
-      }
-      if(request?.company){
-         data.company = request.company;
-      }
-      if(request?.phone){
-         data.phone = request.phone;
-      }
+  async getAll(career, search) {
+    const offers = await this.offerRepository.getAll(career, search);
+    return offers;
+  }
 
-      const offer = await this.offerRepository.create(data)
-      if (!offer) throw new BadRequestException(['incorrect data'])     
+  async getById(id: number) {
+    const offer = await this.offerRepository.getById(id);
+    return offer;
+  }
 
-      return await this.getById(offer.id);
-   }
+  async updateOfferApprovedStatus(id: number) {
+    const offer = (await this.offerRepository.getById(id)) as Offer;
+    const updateData = { approved: !offer.approved };
+    console.log(offer, updateData);
+    return await this.offerRepository.update(id, updateData);
+  }
 
-   async getAll(career, search){
-      const offers = await this.offerRepository.getAll(career, search)
-      return offers;
-   }
+  async update(id: number, request: any, file) {
+    const offer = await this.offerRepository.update(id, request);
 
-   async getById(id:number){
-      const offer = await this.offerRepository.getById(id)
-      return offer;
-   }
+    if (file) {
+      await this.deleteFirebase(offer.image_id);
+      await this.imageRepository.update(offer.image_id, file);
+    }
 
-   async updateOfferApprovedStatus(id: number) {
-      const offer = await this.offerRepository.getById(id) as Offer;
-      const updateData = { approved: !offer.approved};
-      console.log(offer, updateData)
-      return await this.offerRepository.update(id, updateData)
-   }
+    return await this.getById(offer.id);
+  }
 
-   async update(id:number, request: any, file){
-      
-      const offer = await this.offerRepository.update(id, request)
+  async delete(id: number) {
+    const offer = await this.offerRepository.delete(id);
+    await this.deleteFirebase(offer.image_id);
+    await this.imageRepository.delete(offer.image_id);
 
-      if (file) {
-         await this.deleteFirebase(offer.image_id)
-         await this.imageRepository.update(offer.image_id, file)
-      }
+    return { statusCode: 200, message: "removed" };
+  }
 
-      return await this.getById(offer.id);
-   }
+  async getWorkOffers(career, search) {
+    const offers = await this.offerRepository.getWorkOffers(career, search);
+    return offers;
+  }
 
-   async delete(id: number){
-      const offer = await this.offerRepository.delete(id)
-      await this.deleteFirebase(offer.image_id)
-      await this.imageRepository.delete(offer.image_id)
+  async getCourseOffers(career, search) {
+    const offers = await this.offerRepository.getCourseOffers(career, search);
+    return offers;
+  }
+  async getAdminCourseOffers(search) {
+    const offers = await this.offerRepository.getAllCourseOffers(search);
+    return offers;
+  }
+  async getAdminWorkOffers(search) {
+    const offers = await this.offerRepository.getAdminWorkOffers(search);
+    return offers;
+  }
+  async getAdminAll(search) {
+    const offers = await this.offerRepository.getAdminAll(search);
+    return offers;
+  }
+  async deleteFirebase(image_id) {
+    let image = await this.imageRepository.getById(image_id);
 
-      return {statusCode: 200, message: 'removed'}
-   }
-
-   async getWorkOffers(career, search){
-      const offers = await this.offerRepository.getWorkOffers(career, search)
-      return offers;
-   }
-
-   async getCourseOffers(career, search){
-      const offers = await this.offerRepository.getCourseOffers(career, search)
-      return offers;
-   }
-   async getAdminCourseOffers(search){
-      const offers = await this.offerRepository.getAllCourseOffers(search)
-      return offers;
-   }
-   async getAdminWorkOffers(search){
-      const offers = await this.offerRepository.getAdminWorkOffers(search)
-      return offers;
-   }
-   async getAdminAll(search){
-      const offers = await this.offerRepository.getAdminAll(search)
-      return offers;
-   }
-   async deleteFirebase(image_id) {
-      let image = await this.imageRepository.getById(image_id)
-
-      image? await this.firestorageService.remove(image.name): null
-      return true
-   }     
-
+    image ? await this.firestorageService.remove(image.name) : null;
+    return true;
+  }
 }

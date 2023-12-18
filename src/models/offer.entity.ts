@@ -32,6 +32,9 @@ export class Offer {
     @Column({nullable: true})
     partner_id: number;
 
+    @Column({nullable: true})
+    user_id: number;
+
     @Column()
     image_id: number;
     
