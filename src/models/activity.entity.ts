@@ -21,7 +21,7 @@ export class Activity {
   subject_id: number;
   
   @Column({nullable: true})
-  opinions_count: string;
+  opinions_count: number;
 
   @Column({nullable: true})
   title: string;
