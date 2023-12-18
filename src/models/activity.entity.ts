@@ -18,6 +18,9 @@ export class Activity {
   description: string;
 
   @Column({nullable: true})
+  subject_id: number;
+
+  @Column({nullable: true})
   type: string;
 
   @CreateDateColumn({type: "timestamp"})
