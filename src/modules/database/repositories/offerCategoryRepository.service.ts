@@ -22,46 +22,45 @@ export class OfferCategoryRepository {
     }
 
     async getAll(
-        career_id: number,
-        search: string
-      ): Promise<OfferCategory[] | string> {
-        // Inicializar el constructor de consultas
-        const queryBuilder = this.offerCategorysRepository
-          .createQueryBuilder("o")
-          .leftJoinAndSelect("o.offers", "oo")
-          .leftJoinAndSelect("oo.image", "ooi")
-          .leftJoinAndSelect("oo.partner", "oop");
+      career_id: number,
+      search: string
+    ): Promise<OfferCategory[] | string> {
+      // Inicializar el constructor de consultas
+      const queryBuilder = this.offerCategorysRepository
+        .createQueryBuilder("o")
+        .leftJoinAndSelect("o.offers", "oo")
+        .leftJoinAndSelect("oo.image", "ooi")
+        .leftJoinAndSelect("oo.partner", "oop");
     
-        // Excluir categorías específicas
-        queryBuilder.where("o.id NOT IN (:...excludedIds)", {
-          excludedIds: [1, 2],
-        });
+      // Excluir categorías específicas
+      queryBuilder.where("o.id NOT IN (:...excludedIds)", {
+        excludedIds: [1, 2],
+      });
     
-        // Filtrar por career_id si se proporciona
-        if (career_id) {
-          queryBuilder.andWhere("oo.career_id = :career_id", { career_id });
-        }
-    
-        // Filtrar por término de búsqueda si se proporciona
-        if (search) {
-          const searchQuery = search.trim();
-          if (searchQuery.length > 0) {
-            queryBuilder.andWhere(
-              "(oo.title LIKE :search OR oo.description LIKE :search)",
-              { search: `%${searchQuery}%` }
-            );
-          }
-        }
-    
-        const queryResult = await queryBuilder.orderBy("o.id", "DESC").getMany();
-    
-        const categoriesWithApprovedOffers = queryResult.filter((category) =>
-          category.offers.some((offer) => offer.approved)
-        );
-    
-        return categoriesWithApprovedOffers;
+      // Filtrar por career_id si se proporciona
+      if (career_id) {
+        queryBuilder.andWhere("oo.career_id = :career_id", { career_id });
       }
-      
+    
+      // Filtrar por término de búsqueda si se proporciona
+      if (search) {
+        const searchQuery = search.trim();
+        if (searchQuery.length > 0) {
+          queryBuilder.andWhere(
+            "(oo.title LIKE :search OR oo.description LIKE :search)",
+            { search: `%${searchQuery}%` }
+          );
+        }
+      }
+    
+      // Agregar un filtro para incluir solo categorías con ofertas aprobadas
+      queryBuilder.andWhere("oo.approved = :approved", { approved: true });
+    
+      const queryResult = await queryBuilder.orderBy("o.id", "DESC").getMany();
+    
+      return queryResult;
+    }
+    
 
 /*     async getAll(role_id, career_id, search): Promise<OfferCategory[] | string> {
         let where ='o.id != 1 AND o.id != 2'
