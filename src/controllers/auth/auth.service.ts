@@ -50,13 +50,13 @@ export class AuthService {
   async register(request: IRegisterBody | any, image) {
     const emailInUse = await this.userRepository.findUsername(request.email);
     if (!!emailInUse)
-      throw new BadRequestException(["email is already in use"]);
+      throw new BadRequestException(["El email ya está en uso"]);
 
     const usernameInUse = await this.userRepository.findUsername(
       request.username
     );
     if (!!usernameInUse)
-      throw new BadRequestException(["username is already in use"]);
+      throw new BadRequestException(["El username ya está en uso"]);
 
     request.image_id = image
       ? (await this.imageRepository.create(image)).id
