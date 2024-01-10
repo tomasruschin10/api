@@ -56,7 +56,7 @@ export class AuthService {
       request.username
     );
     if (!!usernameInUse)
-      throw new BadRequestException(["El username ya está en uso"]);
+      throw new BadRequestException(["El usuario ya está en uso"]);
 
     request.image_id = image
       ? (await this.imageRepository.create(image)).id
