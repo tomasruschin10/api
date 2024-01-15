@@ -31,7 +31,7 @@ export class Subject {
   @Column({ nullable: true })
   selective: boolean;
 
-  @Column({ nullable: true })
+  @Column("simple-array", { nullable: true })
   selectiveSubjects: string[];
 
   @Column({ nullable: true })
