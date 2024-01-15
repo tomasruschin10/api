@@ -76,6 +76,8 @@ export class SubjectCategoryService {
                name: sub.name,
                prefix: sub.prefix,
                info: sub.info,
+               selective: sub.selective,
+               selectiveSubjects: sub.selectiveSubjects,
                subject_category_id: sub.subject_category_id,
                available: false,
                userSubject: null,
