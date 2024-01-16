@@ -112,6 +112,8 @@ export class AuthController {
     const registerBody: IRegisterBody = req;
     let fileUploaded = await this.uploadFile(file);
     let user = await this.authService.register(registerBody, fileUploaded);
+    
+    await this.sendRegistrationEmail(user.email, user.username);
 
     const token = await this.generateToken(user);
     return res.status(HttpStatus.OK).json({ token: token });
