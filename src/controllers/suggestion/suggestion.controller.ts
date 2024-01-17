@@ -6,11 +6,12 @@ import {
   HttpStatus,
   UseGuards,
 } from "@nestjs/common";
-import { ApiResponse } from "@nestjs/swagger";
+import { ApiResponse, ApiTags } from "@nestjs/swagger";
 import { SuggestionService } from "./suggestion.service";
 import { JwtAuthGuard } from "../auth/jwt-auth.guard";
 import * as jwt from "jsonwebtoken";
 
+@ApiTags('Suggestion')
 @Controller("suggestion")
 export class SuggestionController {
   constructor(private readonly suggestionService: SuggestionService) {}
