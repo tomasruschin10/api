@@ -223,7 +223,7 @@ export class AuthController {
       from: "muyfadu@gmail.com",
       to: email,
       subject: "Registro Exitoso",
-      text: `¡Hola ${username}!\nTu registro ha sido exitoso. ¡Bienvenido a nuestra aplicación!`,
+      html: this.generateRegistrationEmailTemplate(username, email),
     };
 
     try {
@@ -235,5 +235,28 @@ export class AuthController {
         error
       );
     }
+  }
+
+  private generateRegistrationEmailTemplate(
+    username: string,
+    email: string
+  ): string {
+    return `
+      <html>
+        <body>
+          <h1>Bienvenido a muyfadu</h1>
+          <p>¡Hola ${username}!</p>
+          <p>Tu registro ha sido exitoso. Ahora eres parte de nuestra comunidad.</p>
+          <p>Detalles de la cuenta:</p>
+          <ul>
+            <li><strong>Usuario:</strong> ${username}</li>
+            <li><strong>Email:</strong> ${email}</li>
+          </ul>
+          <p>Gracias por unirte a nosotros. ¡Esperamos que disfrutes de la aplicación!</p>
+          <p>Si no te registraste en nuestra aplicación, puedes ignorar este correo electrónico.</p>
+          <p>¡Gracias!</p>
+        </body>
+      </html>
+    `;
   }
 }
