@@ -15,6 +15,9 @@ import { FirestorageService } from "../firestorage/firestorage.service";
 import { MailerService } from "@nestjs-modules/mailer";
 import { MailPasswordHtml } from "src/utils/html/mail_password";
 import { MailPasswordCodeHtml } from "src/utils/html/mail_password_code";
+import * as crypto from "crypto";
+import * as nodemailer from "nodemailer";
+
 @Injectable()
 export class AuthService {
   private readonly logger = new WinstonLogger(AuthService.name);
@@ -45,6 +48,56 @@ export class AuthService {
       return user;
     }
     return false;
+  }
+
+  async findUserByEmail(email: string) {
+    const user = await this.userRepository.findUsername(email);
+    return user;
+  }
+
+  async generateResetCode(email: string): Promise<string> {
+    const resetCode = crypto.randomBytes(6).toString("hex");
+
+    const user = await this.userRepository.findUsername(email);
+
+    user.resetCode = resetCode;
+
+    await this.userRepository.saveUser(user);
+
+    return resetCode;
+  }
+
+  async sendResetCodeByEmail(email: string, resetCode: string): Promise<void> {
+    const transporter = nodemailer.createTransport({
+      service: "gmail",
+      auth: {
+        user: "muyfadu@gmail.com",
+        pass: "mmho lkyt hmyf owju",
+      },
+    });
+
+    const mailOptions = {
+      from: "muyfadu@gmail.com",
+      to: email,
+      subject: "Código de reinicio de contraseña",
+      html: `
+      <html>
+      <body>
+        <h1>Código de recuperación de contraseña</h1>
+        <p>¡Hola este es tu código de recuperación!</p>
+        <p>${resetCode}</p>
+        <p>Si no lo solicitaste, puedes ignorar este correo electrónico.</p>
+        <p>¡Gracias!</p>
+      </body>
+    </html>
+    `,
+    };
+
+    try {
+      await transporter.sendMail(mailOptions);
+    } catch (error) {
+      console.error("Error al enviar el correo electrónico:", error);
+    }
   }
 
   async register(request: IRegisterBody | any, image) {

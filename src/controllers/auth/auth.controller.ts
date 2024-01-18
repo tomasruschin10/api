@@ -189,6 +189,27 @@ export class AuthController {
     return await this.authService.updatePassToken(id, req);
   }
 
+  @Post("forgot-password")
+  @ApiResponse({ status: 500, description: "Server Error" })
+  @ApiResponse({
+    status: 200,
+    description: "Password reset code sent successfully",
+  })
+  @ApiResponse({ status: 400, description: "User not found" })
+  async forgotPassword(@Body() body: { email: string }) {
+    const user = await this.authService.findUserByEmail(body.email);
+
+    if (!user) {
+      throw new BadRequestException("User not found");
+    }
+
+    const resetCode = await this.authService.generateResetCode(user.email);
+
+    await this.authService.sendResetCodeByEmail(user.email, resetCode);
+
+    return { message: "Password reset code sent successfully" };
+  }
+
   async uploadFile(file) {
     if (file) {
       let tm = Date.now();
