@@ -193,12 +193,35 @@ export class AuthService {
     html = html.replace(/{{url}}/gi, url);
 
     await this.userRepository.update(user.id, { remember_token: token });
-    await this.mailerService.sendMail({
-      to: user.email,
-      subject: "Olvidaste tu contraseña?",
-      from: "Fadu",
-      html: html,
+    const transporter = nodemailer.createTransport({
+      service: "gmail",
+      auth: {
+        user: "muyfadu@gmail.com",
+        pass: "mmho lkyt hmyf owju",
+      },
     });
+
+    const mailOptions = {
+      from: "muyfadu@gmail.com",
+      to: email,
+      subject: "Código de reinicio de contraseña",
+      html: `
+      <html>
+      <body>
+        <h1>Código de recuperación de contraseña</h1>
+        <p>¡Hola este es tu código de recuperación!</p>
+        <p>${token}</p>
+        <p>Si no lo solicitaste, puedes ignorar este correo electrónico.</p>
+        <p>¡Gracias!</p>
+      </body>
+    </html>
+    `,
+    };
+    try {
+      await transporter.sendMail(mailOptions);
+    } catch (error) {
+      console.error("Error al enviar el correo electrónico:", error);
+    }
     return token;
   }
 
