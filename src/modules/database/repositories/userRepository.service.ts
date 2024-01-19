@@ -146,7 +146,7 @@ export class UserRepository {
     return user;
   }
 
-  async deleteToken(token) {
+  async validateToken(token) {
     let user = await this.usersRepository
       .createQueryBuilder("u")
       .where("u.remember_token = :token", { token })

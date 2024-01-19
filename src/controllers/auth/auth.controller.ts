@@ -163,21 +163,21 @@ export class AuthController {
     return await this.authService.updateDeviceToken(id, req.token);
   }
 
-  @Post("remember-password")
+  @Post("forgot-password")
   @ApiResponse({ status: 500, description: "Server Error" })
   @ApiResponse({ status: 400, description: "Incorrect Data" })
   @ApiResponse({ status: 200, description: "Success" })
   async rememberPass(@Body() req) {
-    return await this.authService.rememberPass(req.email);
+    return await this.authService.forgotPassword(req.email);
   }
 
-  @Get("delete-token")
+  @Get("validate-token")
   @ApiQuery({ name: "token", required: true, description: "Remember Token" })
   @ApiResponse({ status: 500, description: "Server Error" })
   @ApiResponse({ status: 400, description: "Incorrect Data" })
   @ApiResponse({ status: 200, description: "Success" })
   async deleteToken(@Query("token") token: string) {
-    return await this.authService.deleteToken(token);
+    return await this.authService.validateToken(token);
   }
 
   @Put("update-password/:id")
@@ -187,27 +187,6 @@ export class AuthController {
   @ApiResponse({ status: 200, description: "Success" })
   async updatePassToken(@Body() req, @Param("id", ParseIntPipe) id: number) {
     return await this.authService.updatePassToken(id, req);
-  }
-
-  @Post("forgot-password")
-  @ApiResponse({ status: 500, description: "Server Error" })
-  @ApiResponse({
-    status: 200,
-    description: "Password reset code sent successfully",
-  })
-  @ApiResponse({ status: 400, description: "User not found" })
-  async forgotPassword(@Body() body: { email: string }) {
-    const user = await this.authService.findUserByEmail(body.email);
-
-    if (!user) {
-      throw new BadRequestException("User not found");
-    }
-
-    const resetCode = await this.authService.generateResetCode(user.email);
-
-    await this.authService.sendResetCodeByEmail(user.email, resetCode);
-
-    return { message: "Password reset code sent successfully" };
   }
 
   async uploadFile(file) {

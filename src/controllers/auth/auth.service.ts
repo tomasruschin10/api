@@ -161,7 +161,7 @@ export class AuthService {
     return true;
   }
 
-  async rememberPass(email) {
+  async forgotPassword(email) {
     let user = await this.userRepository.findUsername(email);
     if (!user)
       throw new HttpException("No existe usuario", HttpStatus.NOT_FOUND);
@@ -171,8 +171,6 @@ export class AuthService {
       year: "numeric",
     });
 
-    let url = config.get("server.url-web");
-    let html;
     let token;
 
     if (user.userRole[0].role_id == 2) {
@@ -181,16 +179,9 @@ export class AuthService {
         .substring(7)
         .toUpperCase()
         .substring(0, 5);
-      html = this.mailPasswordCodeHtml.html;
     } else {
       token = await bcrytp.hash(`remember${email}${Date.now()}`, 12);
-      html = this.mailPasswordHtml.html;
     }
-
-    html = html.replace(/{{name}}/gi, user.name);
-    html = html.replace(/{{token}}/gi, token);
-    html = html.replace(/{{date}}/gi, date);
-    html = html.replace(/{{url}}/gi, url);
 
     await this.userRepository.update(user.id, { remember_token: token });
     const transporter = nodemailer.createTransport({
@@ -210,13 +201,21 @@ export class AuthService {
       <body>
         <h1>Código de recuperación de contraseña</h1>
         <p>¡Hola este es tu código de recuperación!</p>
-        <p>${token}</p>
+        <table>
+        <tr>
+          ${token
+            .split("")
+            .map((letter) => `<td>${letter}</td>`)
+            .join("")}
+        </tr>
+      </table>
         <p>Si no lo solicitaste, puedes ignorar este correo electrónico.</p>
         <p>¡Gracias!</p>
       </body>
     </html>
     `,
     };
+
     try {
       await transporter.sendMail(mailOptions);
     } catch (error) {
@@ -225,8 +224,8 @@ export class AuthService {
     return token;
   }
 
-  async deleteToken(token) {
-    return await this.userRepository.deleteToken(token);
+  async validateToken(token) {
+    return await this.userRepository.validateToken(token);
   }
 
   async updatePassToken(id, request) {

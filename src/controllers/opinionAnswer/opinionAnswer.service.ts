@@ -98,9 +98,9 @@ export class OpinionAnswerService {
       html: `
      <html>
      <body>
-       <h1>Te han respondido</h1>
-       <p>¡Hey, el alumno @${student} comentó en tu hilo!</p>
-       <p>Entra al app a ver lo que te han respondido</p>
+       <h1>Te respondieron!</h1>
+       <p>@${student} comentó tu hilo!</p>
+       <p>Entrá a la app para ver más.</p>
        <p>¡Gracias!</p>
      </body>
    </html>
