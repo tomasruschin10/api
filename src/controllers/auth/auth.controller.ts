@@ -171,13 +171,13 @@ export class AuthController {
     return await this.authService.forgotPassword(req.email);
   }
 
-  @Get("validate-token")
+  @Get("validate-recovery-token")
   @ApiQuery({ name: "token", required: true, description: "Remember Token" })
   @ApiResponse({ status: 500, description: "Server Error" })
   @ApiResponse({ status: 400, description: "Incorrect Data" })
   @ApiResponse({ status: 200, description: "Success" })
   async deleteToken(@Query("token") token: string) {
-    return await this.authService.validateToken(token);
+    return await this.authService.validateRecoveryToken(token);
   }
 
   @Put("update-password/:id")

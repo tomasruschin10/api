@@ -197,23 +197,23 @@ export class AuthService {
       to: email,
       subject: "Código de reinicio de contraseña",
       html: `
-        <html>
-          <body>
-            <h1>Código de recuperación de contraseña</h1>
-            <p>¡Hola, este es tu código de recuperación!</p>
-            <table style="border-spacing: 10px;">
-              <tr>
-                ${token
-                  .split("")
-                  .map((letter) => `<td>${letter}</td>`)
-                  .join("")}
-              </tr>
-            </table>
-            <p>Si no lo solicitaste, puedes ignorar este correo electrónico.</p>
-            <p>¡Gracias!</p>
-          </body>
-        </html>
-      `,
+      <html>
+      <body>
+        <h1>Código de recuperación de contraseña</h1>
+        <p>¡Hola este es tu código de recuperación!</p>
+        <table>
+        <tr>
+          ${token
+            .split("")
+            .map((letter) => `<td>${letter}</td>`)
+            .join("")}
+        </tr>
+      </table>
+        <p>Si no lo solicitaste, puedes ignorar este correo electrónico.</p>
+        <p>¡Gracias!</p>
+      </body>
+    </html>
+    `,
     };
 
     try {
@@ -224,8 +224,8 @@ export class AuthService {
     return token;
   }
 
-  async validateToken(token) {
-    return await this.userRepository.validateToken(token);
+  async validateRecoveryToken(token) {
+    return await this.userRepository.validateRecoveryToken(token);
   }
 
   async updatePassToken(id, request) {
