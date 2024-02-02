@@ -22,9 +22,11 @@ import { TagModule } from "src/controllers/tag/tag.module";
 import { UserModule } from "src/controllers/user/user.module";
 import { UserSubjectModule } from "src/controllers/userSubject/userSubject.module";
 import { SuggestionModule } from "src/controllers/suggestion/suggestion.module";
+import { GoogleAuthModule } from "src/controllers/googleAuth/google-auth.module";
 
 export const controllers = [
   AuthModule,
+  GoogleAuthModule,
   UserModule,
   RoleModule,
   AdvertisementModule,
