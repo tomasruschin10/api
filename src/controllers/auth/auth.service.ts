@@ -100,29 +100,57 @@ export class AuthService {
     }
   }
 
-  async register(request: IRegisterBody | any, image) {
-    const emailInUse = await this.userRepository.findUsername(request.email);
-    if (!!emailInUse)
-      throw new BadRequestException(["El email ya está en uso"]);
+  async register(registerData: IRegisterBody | any, image) {
+    if (registerData.google_user) {
+      const existingGoogleUser =
+        await this.userRepository.findUserByGoogleEmail(
+          registerData.email,
+          registerData.google_user
+        );
 
-    const usernameInUse = await this.userRepository.findUsername(
-      request.username
-    );
-    if (!!usernameInUse)
-      throw new BadRequestException(["El usuario ya está en uso"]);
+      if (existingGoogleUser) {
+        throw new BadRequestException(["El email de Google ya está en uso"]);
+      }
 
-    request.image_id = image
-      ? (await this.imageRepository.create(image)).id
-      : 1;
+      registerData.image_id = image
+        ? (await this.imageRepository.create(image)).id
+        : 1;
+      const user = await this.userRepository.register(registerData);
+      await this.userRoleRepository.saveUserRole(user.id, registerData.role_id);
 
-    const user = await this.userRepository.register(request);
-    await this.userRoleRepository.saveUserRole(user.id, request.role_id);
+      if (!registerData.uid) {
+        await this.update(user.id, { uid: user.id }, null);
+      }
 
-    if (!request.uid) {
-      await this.update(user.id, { uid: user.id }, null);
+      return await this.userRepository.findById(user.id);
+    } else {
+      const emailInUse = await this.userRepository.findUsername(
+        registerData.email
+      );
+      const usernameInUse = await this.userRepository.findUsername(
+        registerData.username
+      );
+
+      if (emailInUse) {
+        throw new BadRequestException(["El email ya está en uso"]);
+      }
+
+      if (usernameInUse) {
+        throw new BadRequestException(["El usuario ya está en uso"]);
+      }
+
+      registerData.image_id = image
+        ? (await this.imageRepository.create(image)).id
+        : 1;
+      const user = await this.userRepository.register(registerData);
+      await this.userRoleRepository.saveUserRole(user.id, registerData.role_id);
+
+      if (!registerData.uid) {
+        await this.update(user.id, { uid: user.id }, null);
+      }
+
+      return await this.userRepository.findById(user.id);
     }
-
-    return await this.userRepository.findById(user.id);
   }
 
   async update(id: number | string, request: IUpdateBody | any, file) {

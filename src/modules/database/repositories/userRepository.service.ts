@@ -30,12 +30,30 @@ export class UserRepository {
     );
   }
 
+  async findUserByGoogleEmail(
+    email: string,
+    google_user: boolean
+  ): Promise<User> {
+    const queryBuilder = this.usersRepository
+      .createQueryBuilder("u")
+      .leftJoinAndSelect("u.userRole", "ur")
+      .innerJoinAndSelect("ur.role", "r")
+      .leftJoinAndSelect("u.career", "uc")
+      .leftJoinAndSelect("u.image", "ui")
+      .where("u.email = :email", { email });
+
+    if (google_user) {
+      queryBuilder.andWhere("u.google_user = :google_user", { google_user: true });
+    }
+
+    return queryBuilder.orderBy("u.id", "DESC").getOne();
+  }
+
   async saveUser(user: User): Promise<User> {
     return this.usersRepository.save(user);
   }
 
   async register(request) {
-    //save user
     const hash = await bcrypt.hash(request.password, 12);
     const user = this.usersRepository.create({
       username: request.username,

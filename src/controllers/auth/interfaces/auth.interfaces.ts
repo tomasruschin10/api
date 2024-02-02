@@ -11,6 +11,7 @@ export interface IRegisterBody {
     career_id: number;
     image: Express.Multer.File;
     device_token: string;
+    google_user: boolean;
 } 
 
 export interface IUpdateBody {

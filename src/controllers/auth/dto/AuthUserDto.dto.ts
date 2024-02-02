@@ -30,6 +30,9 @@ export class authRegisterDto {
     instagram: string;
 
     @ApiProperty()
+    google_user: boolean;
+
+    @ApiProperty()
     web: string;
 
     @ApiProperty()
