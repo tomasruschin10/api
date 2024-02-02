@@ -48,6 +48,9 @@ export class User {
   @Column({ default: 1, type: "boolean" })
   active: number;
 
+  @Column({ default: false })
+  google_user: boolean;
+
   @Column({ nullable: true })
   career_id: number;
 

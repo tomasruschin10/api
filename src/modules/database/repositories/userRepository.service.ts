@@ -43,7 +43,9 @@ export class UserRepository {
       .where("u.email = :email", { email });
 
     if (google_user) {
-      queryBuilder.andWhere("u.google_user = :google_user", { google_user: true });
+      queryBuilder.andWhere("u.google_user = :google_user", {
+        google_user: true,
+      });
     }
 
     return queryBuilder.orderBy("u.id", "DESC").getOne();
@@ -68,10 +70,10 @@ export class UserRepository {
       uid: request.uid ? request.uid : null,
       career_id: request.career_id ? request.career_id : null,
       image_id: request.image_id,
+      google_user: request.google_user ? request.google_user : false,
       device_token: request.device_token ? request.device_token : null,
     });
     await this.usersRepository.save(user);
-    //return
     return user;
   }
 
