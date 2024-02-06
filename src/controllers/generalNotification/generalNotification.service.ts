@@ -61,7 +61,7 @@ export class GeneralNotificationService {
         body: item.description,
         title: item.title,
         date: `${time} - ${date}`,
-        probando: item,
+        opinionId: item.id,
         datetime: Date.parse(item.created_at.toISOString()),
         image:
           "https://planetafacil.plenainclusion.org/wp-content/uploads/2020/04/bell-1096280_1280-820x820.png",
@@ -79,7 +79,7 @@ export class GeneralNotificationService {
         title: item.title,
         date: `${time} - ${date}`,
         datetime: Date.parse(item.created_at.toISOString()),
-        probando: item,
+        opinionId: item.id,
         image:
           "https://planetafacil.plenainclusion.org/wp-content/uploads/2020/04/bell-1096280_1280-820x820.png",
       });
@@ -97,7 +97,7 @@ export class GeneralNotificationService {
         opinionsCount: item.opinions_count,
         id: item.subject_id,
         date: `${time} - ${date}`,
-        probando: item,
+        opinionId: item.id,
         datetime: Date.parse(item.created_at.toISOString()),
         image:
           "https://planetafacil.plenainclusion.org/wp-content/uploads/2020/04/bell-1096280_1280-820x820.png",
