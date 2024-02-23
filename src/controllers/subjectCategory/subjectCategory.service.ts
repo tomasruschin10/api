@@ -78,6 +78,7 @@ export class SubjectCategoryService {
                info: sub.info,
                selective: sub.selective,
                selectiveSubjects: sub.selectiveSubjects,
+               chairs: sub.chairs,
                subject_category_id: sub.subject_category_id,
                available: false,
                userSubject: null,

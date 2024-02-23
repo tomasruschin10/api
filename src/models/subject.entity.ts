@@ -34,6 +34,9 @@ export class Subject {
   @Column("simple-array", { nullable: true })
   selectiveSubjects: string[];
 
+  @Column("simple-array", { nullable: true })
+  chairs: string[];
+
   @Column({ nullable: true })
   url: string;
 
