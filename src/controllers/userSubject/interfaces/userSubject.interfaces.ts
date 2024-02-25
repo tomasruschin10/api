@@ -3,4 +3,9 @@ export interface userSubjectBody {
     subject_id: number;
     score: number;
     finish: number;
+    chair: string;
+    requirement: number;
+    qualityOfTeachers: number;
+    practicalJobs: number;
+    cost: number;
 } 

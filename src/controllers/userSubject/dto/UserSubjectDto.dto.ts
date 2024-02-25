@@ -16,8 +16,23 @@ export class userSubjectCreateDto {
     score: number;
 
     @ApiProperty()
+    chair: string;
+
+    @ApiProperty()
+    requirement: number;
+
+    @ApiProperty()
+    qualityOfTeachers: number;
+
+    @ApiProperty()
+    practicalJobs: number;
+
+    @ApiProperty()
+    cost: number;
+
+    @ApiProperty()
     finish: number;
-} 
+}
 
 export class userSubjectUpdateDto {
     @ApiProperty()
@@ -31,7 +46,7 @@ export class userSubjectUpdateDto {
 
     @ApiProperty()
     finish: number;
-} 
+}
 
 export class userSubjectDto {
     @ApiProperty()
@@ -47,8 +62,23 @@ export class userSubjectDto {
     score: number;
 
     @ApiProperty()
-    finish: number;  
-  
+    chair: string;
+
+    @ApiProperty()
+    requirement: number;
+
+    @ApiProperty()
+    qualityOfTeachers: number;
+
+    @ApiProperty()
+    practicalJobs: number;
+
+    @ApiProperty()
+    cost: number;
+
+    @ApiProperty()
+    finish: number;
+
     @ApiProperty()
     created_at: Date
 
