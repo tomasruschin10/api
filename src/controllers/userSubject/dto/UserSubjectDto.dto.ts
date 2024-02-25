@@ -16,18 +16,23 @@ export class userSubjectCreateDto {
     score: number;
 
     @ApiProperty()
+    @IsString()
     chair: string;
 
     @ApiProperty()
+    @IsNumber()
     requirement: number;
 
     @ApiProperty()
+    @IsNumber()
     qualityOfTeachers: number;
 
     @ApiProperty()
+    @IsNumber()
     practicalJobs: number;
 
     @ApiProperty()
+    @IsNumber()
     cost: number;
 
     @ApiProperty()
@@ -62,18 +67,23 @@ export class userSubjectDto {
     score: number;
 
     @ApiProperty()
+    @IsString()
     chair: string;
 
     @ApiProperty()
+    @IsNumber()
     requirement: number;
 
     @ApiProperty()
+    @IsNumber()
     qualityOfTeachers: number;
 
     @ApiProperty()
+    @IsNumber()
     practicalJobs: number;
 
     @ApiProperty()
+    @IsNumber()
     cost: number;
 
     @ApiProperty()

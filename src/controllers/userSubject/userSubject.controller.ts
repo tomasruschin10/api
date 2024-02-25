@@ -11,7 +11,6 @@ import { userSubjectDto, userSubjectCreateDto, userSubjectUpdateDto } from './dt
 export class UserSubjectController {
   
     constructor(private userSubjectService: UserSubjectService) {}
-
     
     @UseGuards(JwtAuthGuard)
     @Post('create')
