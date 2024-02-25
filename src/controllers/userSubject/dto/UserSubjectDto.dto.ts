@@ -50,6 +50,26 @@ export class userSubjectUpdateDto {
     score: number;
 
     @ApiProperty()
+    @IsString()
+    chair: string;
+
+    @ApiProperty()
+    @IsNumber()
+    requirement: number;
+
+    @ApiProperty()
+    @IsNumber()
+    qualityOfTeachers: number;
+
+    @ApiProperty()
+    @IsNumber()
+    practicalJobs: number;
+
+    @ApiProperty()
+    @IsNumber()
+    cost: number;
+
+    @ApiProperty()
     finish: number;
 }
 
