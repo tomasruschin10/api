@@ -12,15 +12,18 @@ export class Opinion {
 
     @PrimaryGeneratedColumn()
     id: number
-    
-    @Column({default: 1, type: 'boolean', nullable: true})
+
+    @Column({ default: 1, type: 'boolean', nullable: true })
     anonymous: number;
 
     @Column()
     title: string
 
-    @Column({type: 'longtext'})
+    @Column({ type: 'longtext' })
     description: string
+
+    @Column()
+    currentSchoolYear: string
 
     @Column()
     student_id: number
@@ -37,7 +40,7 @@ export class Opinion {
     @UpdateDateColumn({ type: "timestamp", nullable: true })
     updated_at: Moment
 
-    
+
     // Relations
 
     @OneToMany(() => OpinionTag, opinionTags => opinionTags.opinion, { cascade: true })
@@ -47,14 +50,14 @@ export class Opinion {
     })
     opinionTags: OpinionTag[];
 
-    @ManyToOne(() => User, student => student.id, { onDelete: 'CASCADE' , onUpdate: 'CASCADE'})
+    @ManyToOne(() => User, student => student.id, { onDelete: 'CASCADE', onUpdate: 'CASCADE' })
     @JoinColumn({
         name: 'student_id',
         referencedColumnName: 'id'
     })
     student: User;
 
-    @ManyToOne(() => Subject, subject => subject.id, { onDelete: 'CASCADE' , onUpdate: 'CASCADE'})
+    @ManyToOne(() => Subject, subject => subject.id, { onDelete: 'CASCADE', onUpdate: 'CASCADE' })
     @JoinColumn({
         name: 'subject_id',
         referencedColumnName: 'id'

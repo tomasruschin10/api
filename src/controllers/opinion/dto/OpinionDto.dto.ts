@@ -17,6 +17,10 @@ export class opinionCreateDto {
     description: string;
 
     @ApiProperty()
+    @IsString()
+    currentSchoolYear: string;
+
+    @ApiProperty()
     @IsNotEmpty()
     subject_id: number;
 
@@ -40,6 +44,9 @@ export class opinionUpdateDto {
     description: string;
 
     @ApiProperty()
+    currentSchoolYear: string;
+
+    @ApiProperty()
     subject_id: number;
 
     @ApiProperty()
@@ -47,7 +54,7 @@ export class opinionUpdateDto {
 
     @ApiProperty()
     professor: string;
-} 
+}
 
 export class opinionDto {
     @ApiProperty()
@@ -61,6 +68,8 @@ export class opinionDto {
 
     description: string;
 
+    currentSchoolYear: string;
+
     @ApiProperty()
     student_id: number;
 
@@ -69,7 +78,7 @@ export class opinionDto {
 
     @ApiProperty()
     professor: string;
-  
+
     @ApiProperty()
     created_at: Date
 

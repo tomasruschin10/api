@@ -3,4 +3,5 @@ export interface opinionBody {
     anonymous: number;
     description: string;
     professor: string;
+    currentSchoolYear: string;
 } 
