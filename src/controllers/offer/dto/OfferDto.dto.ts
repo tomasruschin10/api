@@ -11,7 +11,6 @@ export class offerCreateDto {
     point: number;
 
     @ApiProperty()
-    @IsNotEmpty()
     offer_category_id: number;
 
     @ApiProperty()

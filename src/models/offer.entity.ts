@@ -17,7 +17,7 @@ export class Offer {
     @Column({ nullable: true })
     title: string;
 
-    @Column()
+    @Column({ nullable: true })    
     offer_category_id: number;
 
     @Column({ nullable: true, type: 'longtext' })
