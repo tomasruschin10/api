@@ -1,4 +1,4 @@
-import {Body, Controller, Get, Post, UseGuards, Param, ParseIntPipe, Put} from '@nestjs/common';
+import {Body, Controller, Get, Delete, Post, UseGuards, Param, ParseIntPipe, Put} from '@nestjs/common';
 import { UserService } from './user.service';
 import { ApiTags, ApiParam, ApiResponse } from '@nestjs/swagger';
 import { JwtAuthGuard } from '../auth/jwt-auth.guard';
@@ -29,5 +29,14 @@ export class UserController {
       return await this.userService.findById(id);
     }
 
+    // @UseGuards(JwtAuthGuard)
+    @Delete(':id')
+    @ApiParam({name: 'id', required: true, description: 'Record Identifier'})
+    @ApiResponse({status: 500, description: 'Server Error'})
+    @ApiResponse({status: 404, description: 'Record not found'})
+    @ApiResponse({status: 200, description: 'Correct'})
+    async deleteUser(@Param('id', ParseIntPipe) id: number) {
+      return await this.userService.deleteUser(id);
+    }
 
 }
