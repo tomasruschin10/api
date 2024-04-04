@@ -51,6 +51,9 @@ export class User {
   @Column({ default: false })
   google_user: boolean;
 
+  @Column({ default: false })
+  apple_user: boolean;
+
   @Column({ nullable: true })
   career_id: number;
 
