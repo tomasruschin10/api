@@ -123,6 +123,29 @@ export class AuthService {
       }
 
       return await this.userRepository.findById(user.id);
+      
+    } else if (registerData.apple_user) {
+      const existingAppleUser =
+      await this.userRepository.findUserByAppleEmail(
+        registerData.email,
+        registerData.apple_user
+      );
+
+    if (existingAppleUser) {
+      throw new BadRequestException(["El email de Apple ya está en uso"]);
+    }
+
+    registerData.image_id = image
+      ? (await this.imageRepository.create(image)).id
+      : 1;
+    const user = await this.userRepository.register(registerData);
+    await this.userRoleRepository.saveUserRole(user.id, registerData.role_id);
+
+    if (!registerData.uid) {
+      await this.update(user.id, { uid: user.id }, null);
+    }
+    return await this.userRepository.findById(user.id);
+
     } else {
       const emailInUse = await this.userRepository.findUsername(
         registerData.email

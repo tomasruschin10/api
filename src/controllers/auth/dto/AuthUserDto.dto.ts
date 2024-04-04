@@ -33,6 +33,9 @@ export class authRegisterDto {
     google_user: boolean;
 
     @ApiProperty()
+    apple_user: boolean;
+
+    @ApiProperty()
     web: string;
 
     @ApiProperty()

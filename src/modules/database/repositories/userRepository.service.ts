@@ -51,6 +51,27 @@ export class UserRepository {
     return queryBuilder.orderBy("u.id", "DESC").getOne();
   }
 
+  async findUserByAppleEmail(
+    email: string,
+    apple_user: boolean
+  ): Promise<User> {
+    const queryBuilder = this.usersRepository
+      .createQueryBuilder("u")
+      .leftJoinAndSelect("u.userRole", "ur")
+      .innerJoinAndSelect("ur.role", "r")
+      .leftJoinAndSelect("u.career", "uc")
+      .leftJoinAndSelect("u.image", "ui")
+      .where("u.email = :email", { email });
+
+    if (apple_user) {
+      queryBuilder.andWhere("u.apple_user = :apple_user", {
+        apple_user: true,
+      });
+    }
+
+    return queryBuilder.orderBy("u.id", "DESC").getOne();
+  }
+
   async saveUser(user: User): Promise<User> {
     return this.usersRepository.save(user);
   }

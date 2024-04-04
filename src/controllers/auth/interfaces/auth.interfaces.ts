@@ -12,6 +12,7 @@ export interface IRegisterBody {
     image: Express.Multer.File;
     device_token: string;
     google_user: boolean;
+    apple_user: boolean;
 } 
 
 export interface IUpdateBody {
