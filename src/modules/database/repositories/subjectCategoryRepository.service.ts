@@ -45,22 +45,16 @@ export class SubjectCategoryRepository {
 
 
     async update(id: number, request): Promise<any> {
-        let subjectCategory = await this.subjectCategorysRepository.findOne(id, { relations: ['subjects', 'subjects.subjectParent'] });
+        let subjectCategory = await this.subjectCategorysRepository.findOne(id);
         if (!subjectCategory)
             throw new HttpException('error! record not found', HttpStatus.NOT_FOUND);
 
-        subjectCategory = await this.sharedService.updateObject(subjectCategory, request);
-
-        // Actualizar los subjectParent
-        subjectCategory.subjects.forEach(subject => {
-            subject.subjectParent = request.subjectParent.filter(sp => sp.subject_id === subject.id);
-        });
+        subjectCategory = await this.sharedService.updateObject(subjectCategory, request)
 
         await this.subjectCategorysRepository.save(subjectCategory);
 
         return subjectCategory;
     }
-
 
     async delete(id): Promise<any> {
         const subjectCategory = await this.subjectCategorysRepository.findOne(id);
