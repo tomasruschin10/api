@@ -8,7 +8,9 @@ export class SubjectService {
     private readonly subjectParentRepository: SubjectParentRepository
   ) { }
 
-  async create(request: { data: any[] }): Promise<{ statusCode: number; message: any }> {
+  async create(request: {
+    data: any[];
+  }): Promise<{ statusCode: number; message: any }> {
     const created: any[] = [];
 
     if (!Array.isArray(request.data)) {
@@ -28,35 +30,35 @@ export class SubjectService {
         prefix: dataItem.prefix,
       };
 
-      for (const parent of dataItem?.subjectParent || []) {
-        if (typeof parent.key !== 'undefined' || parent.id) {
-          if (typeof parent.key !== 'undefined') {
-            subjectParents.push(created[parent.key].id);
+      /*         for (const parent of dataItem?.subjectParent) {
+          if (typeof parent.key !== 'undefined' || parent.id) {
+            if (typeof parent.key !== 'undefined') {
+              subjectParents.push(created[parent.key].id);
+            }
+            if (parent.id) {
+              subjectParents.push(parent.id);
+            }
           }
-          if (parent.id) {
-            subjectParents.push(parent.id);
-          }
-        }
-      }
+        } */
 
       try {
         const subject = await this.subjectRepository.create(body);
         created.push(subject);
 
-        for (const subjectParentId of subjectParents) {
-          await this.subjectParentRepository.create({
-            subject_id: subject.id,
-            subject_parent_id: subjectParentId,
-          });
-        }
+        // Guardar los padres
+        /*           for (const subjectParent of subjectParents) {
+            await this.subjectParentRepository.create({
+              subject_id: subject.id,
+              subject_parent_id: subjectParent
+            });
+          } */
       } catch (error) {
-        console.error('ERROR: ', error);
+        console.error("ERROR: ", error);
       }
     }
 
     return { statusCode: HttpStatus.OK, message: created };
   }
-
 
   async getAll(career) {
     const subjects = await this.subjectRepository.getAll(career);
@@ -68,46 +70,45 @@ export class SubjectService {
     return subject;
   }
 
-  async update(request: any) {
+  async update(request: any): Promise<any[]> {
     const updatedSubjects: any[] = [];
-    for (const requestData of request.data) {
-      let subject;
-  
-      const subjectUpdateData = {
-        name: requestData.name,
-        subject_category_id: requestData.subject_category_id,
-        info: requestData.info,
-        url: requestData.url,
-        selective: requestData.selective,
-        selectiveSubjects: requestData.selectiveSubjects,
-        chairs: requestData.chairs,
-        prefix: requestData.prefix,
+    for (let i = 0; i < request.data.length; i++) {
+      const subjectData = request.data[i];
+      const body = {
+        name: subjectData.name,
+        subject_category_id: subjectData.subject_category_id,
+        info: subjectData.info,
+        url: subjectData.url,
+        selective: subjectData.selective,
+        selectiveSubjects: subjectData.selectiveSubjects,
+        chairs: subjectData.chairs,
+        prefix: subjectData.prefix,
       };
-  
-      if (requestData.id) {
-        await this.subjectRepository.update(requestData.id, subjectUpdateData);
-        subject = subjectUpdateData;
+
+      let subject;
+      if (subjectData.id) {
+        subject = await this.subjectRepository.update(subjectData.id, body);
       } else {
-        subject = await this.subjectRepository.create(subjectUpdateData);
+        subject = await this.subjectRepository.create(body);
       }
-  
-      if (requestData.subjectParent) {
-        await this.subjectParentRepository.delete({ subject_id: subject.id });
-  
-        for (const subjectParentData of requestData.subjectParent) {
-          await this.subjectParentRepository.create({
-            subject_id: subject.id,
-            subject_parent_id: subjectParentData.id,
-          });
+
+      if (subjectData.subjectParent) {
+        const parentData = {
+          ...subjectData.subjectParent,
+          subject_id: subject.id, 
+        };
+        
+        if (subjectData.subjectParent.id) {
+          await this.subjectParentRepository.update(subjectData.subjectParent.id, parentData);
+        } else {
+          await this.subjectParentRepository.create(parentData);
         }
       }
-  
+
       updatedSubjects.push(subject);
     }
     return updatedSubjects;
   }
-  
-  
 
   async delete(id: number) {
     const subject = await this.subjectRepository.delete(id);
