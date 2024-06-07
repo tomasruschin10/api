@@ -80,7 +80,7 @@ export class SubjectService {
         selective: request.data[i].selective,
         selectiveSubjects: request.data[i].selectiveSubjects,
         chairs: request.data[i].chairs,
-        subjectParents: request.data[i].subjectParents,
+        subjectParent: request.data[i].subjectParent,
         prefix: request.data[i].prefix,
       };
 
