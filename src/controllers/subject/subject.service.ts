@@ -98,7 +98,7 @@ export class SubjectService {
         created.push(subject);
 
         // Obtener subjectParents para el subject actualizado o creado
-        const parents = await this.subjectCategoryRepository.getSubjectParentsBySubjectId(request.data[i].id);
+        const parents = await this.subjectCategoryRepository.getSubjectParentsBySubjectCategoryId(request.data[i].id);
         subjectParents.push({ subjectId: request.data[i].id, parents });
     }
 
