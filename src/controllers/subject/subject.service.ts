@@ -72,28 +72,59 @@ export class SubjectService {
 
   async update(request: any) {
     const created: any[] = [];
+
     for (let i = 0; i < request.data.length; i++) {
+      const subjectData = request.data[i];
       let subject;
-      let body = {
-        name: request.data[i].name,
-        subject_category_id: request.data[i].subject_category_id,
-        info: request.data[i].info,
-        url: request.data[i].url,
-        selective: request.data[i].selective,
-        selectiveSubjects: request.data[i].selectiveSubjects,
-        chairs: request.data[i].chairs,
-        prefix: request.data[i].prefix,
+      const body = {
+        name: subjectData.name,
+        subject_category_id: subjectData.subject_category_id,
+        info: subjectData.info,
+        url: subjectData.url,
+        selective: subjectData.selective,
+        selectiveSubjects: subjectData.selectiveSubjects,
+        chairs: subjectData.chairs,
+        prefix: subjectData.prefix,
       };
 
-      if (request.data[i].id) {
-        subject = await this.subjectRepository.update(request.data[i].id, body);
+      if (subjectData.id) {
+        subject = await this.subjectRepository.update(subjectData.id, body);
       } else {
         subject = await this.subjectRepository.create(body);
       }
-      created.push(subject);
 
+      // Actualizar subjectParent
+      if (subjectData.subjectParent) {
+        await this.updateSubjectParents(subject.id, subjectData.subjectParent);
+      }
+
+      created.push(subject);
     }
+
+    if (request.deleteData && request.deleteData.length > 0) {
+      await this.deleteSubjects(request.deleteData);
+    }
+
     return created;
+  }
+
+ private async updateSubjectParents(subjectId: number, parents: any[]) {
+    // Eliminar las correlativas existentes
+    const parentIds = parents.map(parent => parent.id);
+    await this.subjectParentRepository.deleteMany(parentIds, subjectId);
+
+    // Crear nuevas correlativas
+    for (const parent of parents) {
+      const newSubjectParent = {
+        subject_id: subjectId,
+        subject_parent_id: parent.id,
+      };
+      await this.subjectParentRepository.create(newSubjectParent);
+    }
+  }
+
+  private async deleteSubjects(ids: number[]) {
+    await this.subjectRepository.deleteMany(ids);
   }
 
   async delete(id: number) {
