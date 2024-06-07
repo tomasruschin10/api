@@ -97,8 +97,8 @@ export class SubjectService {
         }
         created.push(subject);
 
-        const parents = await this.subjectCategoryRepository.getSubjectParentsBySubjectCategoryId(request.data[i].subject_category_id);
-        subjectParents.push({ subjectCategoryId: request.data[i].subject_category_id, parents });
+        const parents = await this.subjectCategoryRepository.getAll(65);
+        subjectParents.push({ subjectCategoryId: 65, parents });
     }
 
     return { created, subjectParents };
