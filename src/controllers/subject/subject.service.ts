@@ -71,49 +71,58 @@ export class SubjectService {
   }
 
   async update(request: any) {
-    const created: any[] = [];
+    const createdSubjects: any[] = [];
+    const createdSubjectParents: any[] = [];
+    
     for (let i = 0; i < request.data.length; i++) {
-      let subject;
-      let subjectParents = [];
-      let body = {
-        name: request.data[i].name,
-        subject_category_id: request.data[i].subject_category_id,
-        info: request.data[i].info,
-        url: request.data[i].url,
-        selective: request.data[i].selective,
-        selectiveSubjects: request.data[i].selectiveSubjects,
-        chairs: request.data[i].chairs,
-        prefix: request.data[i].prefix,
-      };
+        let subject;
+        let subjectParents = [];
+        let body = {
+            name: request.data[i].name,
+            subject_category_id: request.data[i].subject_category_id,
+            info: request.data[i].info,
+            url: request.data[i].url,
+            selective: request.data[i].selective,
+            selectiveSubjects: request.data[i].selectiveSubjects,
+            chairs: request.data[i].chairs,
+            prefix: request.data[i].prefix,
+        };
 
-      for (let parent of request.data[i].subjectParent) {
-         if (parent.key || parent.key == 0 || parent.id) {
-            if (parent.key || parent.key == 0) {
-               subjectParents.push(created[`${parent.key}`].id)
+        for (let parent of request.data[i].subjectParent) {
+            if (parent.key || parent.key === 0 || parent.id) {
+                if (parent.key || parent.key === 0) {
+                    subjectParents.push(createdSubjects[`${parent.key}`].id);
+                }
+                if (parent.id) {
+                    subjectParents.push(parent.id);
+                }
             }
-            if (parent.id) {
-               subjectParents.push(parent.id)
-            }
-         }
-      }
+        }
 
-      if (request.data[i].id) {
-        subject = await this.subjectRepository.update(request.data[i].id, body);
-      } else {
-        subject = await this.subjectRepository.create(body);
-      }
-      created.push(subject);
-      await this.subjectParentRepository.deleteMany(request.data[i].deleteParent, subject.id)
-      for (let subjectParent of subjectParents) {
-         const prueba = await this.subjectParentRepository.create({
-            subject_id: subject.id,
-            subject_parent_id: subjectParent
-         })
-         created.push(prueba)
-      }
+        if (request.data[i].id) {
+            subject = await this.subjectRepository.update(request.data[i].id, body);
+        } else {
+            subject = await this.subjectRepository.create(body);
+        }
+        
+        createdSubjects.push(subject);
+        
+        await this.subjectParentRepository.deleteMany(request.data[i].deleteParent, subject.id);
+        
+        for (let subjectParent of subjectParents) {
+            const newSubjectParent = await this.subjectParentRepository.create({
+                subject_id: subject.id,
+                subject_parent_id: subjectParent
+            });
+            createdSubjectParents.push(newSubjectParent);
+        }
     }
-    return created;
-  }
+    
+    return {
+        createdSubjects,
+        createdSubjectParents
+    };
+}
 
   async delete(id: number) {
     const subject = await this.subjectRepository.delete(id);
