@@ -1,9 +1,12 @@
 import { HttpStatus, Injectable } from "@nestjs/common";
 import { SubjectParentRepository } from "src/modules/database/repositories/subjectParentRepository.service";
 import { SubjectRepository } from "../../modules/database/repositories/subjectRepository.service";
+import { SubjectCategoryRepository } from "src/modules/database/repositories/subjectCategoryRepository.service";
+
 @Injectable()
 export class SubjectService {
   constructor(
+    private readonly subjectCategoryRepository: SubjectCategoryRepository,
     private readonly subjectRepository: SubjectRepository,
     private readonly subjectParentRepository: SubjectParentRepository
   ) { }
@@ -72,29 +75,35 @@ export class SubjectService {
 
   async update(request: any) {
     const created: any[] = [];
+    const subjectParents: any[] = [];
+
     for (let i = 0; i < request.data.length; i++) {
-      let subject;
-      let body = {
-        name: request.data[i].name,
-        subject_category_id: request.data[i].subject_category_id,
-        info: request.data[i].info,
-        url: request.data[i].url,
-        selective: request.data[i].selective,
-        selectiveSubjects: request.data[i].selectiveSubjects,
-        chairs: request.data[i].chairs,
-        prefix: request.data[i].prefix,
-      };
+        let subject;
+        let body = {
+            name: request.data[i].name,
+            subject_category_id: request.data[i].subject_category_id,
+            info: request.data[i].info,
+            url: request.data[i].url,
+            selective: request.data[i].selective,
+            selectiveSubjects: request.data[i].selectiveSubjects,
+            chairs: request.data[i].chairs,
+            prefix: request.data[i].prefix,
+        };
 
-      if (request.data[i].id) {
-        subject = await this.subjectRepository.update(request.data[i].id, body);
-      } else {
-        subject = await this.subjectRepository.create(body);
-      }
-      created.push(subject);
+        if (request.data[i].id) {
+            subject = await this.subjectRepository.update(request.data[i].id, body);
+        } else {
+            subject = await this.subjectRepository.create(body);
+        }
+        created.push(subject);
 
+        // Obtener subjectParents para el subject actualizado o creado
+        const parents = await this.subjectCategoryRepository.getSubjectParentsBySubjectId(request.data[i].id);
+        subjectParents.push({ subjectId: request.data[i].id, parents });
     }
-    return created;
-  }
+
+    return { created, subjectParents };
+}
 
   async delete(id: number) {
     const subject = await this.subjectRepository.delete(id);

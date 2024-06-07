@@ -34,6 +34,22 @@ export class SubjectCategoryRepository {
         // filtrar las categorias por el id de la carrera del etudiante
     }
 
+    async getSubjectParentsBySubjectId(subjectId: number): Promise<any> {
+        return await this.subjectCategorysRepository.createQueryBuilder('s')
+            .leftJoin('s.subject', 'ss')
+            .leftJoin('ss.subjectParent', 'ssp')
+            .leftJoinAndSelect('ssp.parent', 'ssps')
+            .where('ss.id = :subjectId', { subjectId })
+            .select([
+                'ssp.id', 
+                'ssp.subject_id', 
+                'ssp.subject_parent_id', 
+                'ssps.id', 
+                'ssps.name'
+            ])
+            .getMany();
+    }
+
 
     async getById(id): Promise<SubjectCategory | string> {
         const subjectCategory = await this.subjectCategorysRepository.findOne(id)
