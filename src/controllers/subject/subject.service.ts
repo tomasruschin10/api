@@ -69,31 +69,45 @@ export class SubjectService {
   }
 
   async update(request: any) {
-    const created: any[] = [];
-    for (let i = 0; i < request.data.length; i++) {
+    const updatedSubjects: any[] = [];
+    for (const requestData of request.data) {
       let subject;
-      let body = {
-        name: request.data[i].name,
-        subject_category_id: request.data[i].subject_category_id,
-        info: request.data[i].info,
-        url: request.data[i].url,
-        selective: request.data[i].selective,
-        selectiveSubjects: request.data[i].selectiveSubjects,
-        chairs: request.data[i].chairs,
-        subjectParent: request.data[i].subjectParent,
-        prefix: request.data[i].prefix,
+  
+      const subjectUpdateData = {
+        name: requestData.name,
+        subject_category_id: requestData.subject_category_id,
+        info: requestData.info,
+        url: requestData.url,
+        selective: requestData.selective,
+        selectiveSubjects: requestData.selectiveSubjects,
+        chairs: requestData.chairs,
+        prefix: requestData.prefix,
       };
-
-      if (request.data[i].id) {
-        subject = await this.subjectRepository.update(request.data[i].id, body);
+  
+      if (requestData.id) {
+        await this.subjectRepository.update(requestData.id, subjectUpdateData);
+        subject = subjectUpdateData;
       } else {
-        subject = await this.subjectRepository.create(body);
+        subject = await this.subjectRepository.create(subjectUpdateData);
       }
-      created.push(subject);
-
+  
+      if (requestData.subjectParent) {
+        await this.subjectParentRepository.delete({ subject_id: subject.id });
+  
+        for (const subjectParentData of requestData.subjectParent) {
+          await this.subjectParentRepository.create({
+            subject_id: subject.id,
+            subject_parent_id: subjectParentData.id,
+          });
+        }
+      }
+  
+      updatedSubjects.push(subject);
     }
-    return created;
+    return updatedSubjects;
   }
+  
+  
 
   async delete(id: number) {
     const subject = await this.subjectRepository.delete(id);
