@@ -36,8 +36,8 @@ export class SubjectCategoryRepository {
 
     async getSubjectParentsBySubjectCategoryId(subjectCategoryId: number): Promise<any> {
         return await this.subjectCategorysRepository.createQueryBuilder('s')
-            .leftJoin('s.subject', 'ss')
-            .leftJoin('ss.subjectParent', 'ssp')
+            .leftJoinAndSelect('s.subject', 'ss') 
+            .leftJoinAndSelect('ss.subjectParent', 'ssp')
             .leftJoinAndSelect('ssp.parent', 'ssps')
             .where('ss.subject_category_id = :subjectCategoryId', { subjectCategoryId })
             .select([
@@ -49,6 +49,7 @@ export class SubjectCategoryRepository {
             ])
             .getMany();
     }
+    
     
 
     async getById(id): Promise<SubjectCategory | string> {
