@@ -82,7 +82,7 @@ export class SubjectCategoryService {
                subject_category_id: sub.subject_category_id,
                available: false,
                userSubject: null,
-               subjectParent: []
+               subjectParents: []
             }
             total++
 
@@ -122,7 +122,7 @@ export class SubjectCategoryService {
                      subjectCompleted = false
                      allParentsCompleted = false
                   }
-                  subject.subjectParent.push({
+                  subject.subjectParents.push({
                      id: parent.parent.id,
                      name: parent.parent.name,
                      completed: parentCompleted

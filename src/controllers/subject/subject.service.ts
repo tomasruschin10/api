@@ -1,13 +1,11 @@
-import { HttpStatus, Injectable, HttpException} from "@nestjs/common";
+import { HttpStatus, Injectable } from "@nestjs/common";
 import { SubjectParentRepository } from "src/modules/database/repositories/subjectParentRepository.service";
 import { SubjectRepository } from "../../modules/database/repositories/subjectRepository.service";
-import { Repository } from "typeorm";
-import { SubjectCategory } from "src/models/subjectCategory.entity";
-
+import { SubjectCategoryRepository } from "src/modules/database/repositories/subjectCategoryRepository.service";
 @Injectable()
 export class SubjectService {
   constructor(
-    private subjectCategorysRepository: Repository<SubjectCategory>,
+    private readonly subjectCategoryRepository: SubjectCategoryRepository,
     private readonly subjectRepository: SubjectRepository,
     private readonly subjectParentRepository: SubjectParentRepository
   ) { }
@@ -75,12 +73,11 @@ export class SubjectService {
   }
 
   async update(request: any) {
-    const createdSubjects: any[] = [];
-    const createdSubjectParents: any[] = [];
+    const created: any[] = [];
+    const subjectParentsMap: { [key: string]: any[] } = {};
     
     for (let i = 0; i < request.data.length; i++) {
         let subject;
-        let subjectParents = [];
         let body = {
             name: request.data[i].name,
             subject_category_id: request.data[i].subject_category_id,
@@ -92,59 +89,26 @@ export class SubjectService {
             prefix: request.data[i].prefix,
         };
 
-        console.log('Processing subject:', body);
-        console.log('Subject parents before processing:', request.data[i].subjectParent);
-
-        // Procesar subjectParent
-        for (let parent of request.data[i].subjectParent) {
-            if (parent.key !== undefined || parent.id) {
-                if (parent.key !== undefined) {
-                    subjectParents.push(createdSubjects[parent.key].id);
-                }
-                if (parent.id) {
-                    subjectParents.push(parent.id);
-                }
-            }
-        }
-
-        console.log('Subject parents after processing:', subjectParents);
-
-        // Crear o actualizar subject
         if (request.data[i].id) {
             subject = await this.subjectRepository.update(request.data[i].id, body);
         } else {
             subject = await this.subjectRepository.create(body);
         }
-        
-        createdSubjects.push(subject);
+        created.push(subject);
 
-        // Eliminar subjectParents existentes
-        await this.subjectParentRepository.deleteMany(request.data[i].deleteParent, subject.id);
-        
-        // Crear nuevos subjectParents
-        for (let subjectParent of subjectParents) {
-            const newSubjectParent = await this.subjectParentRepository.create({
-                subject_id: subject.id,
-                subject_parent_id: subjectParent
-            });
-            createdSubjectParents.push(newSubjectParent);
+        // Agregar subjectParent al mapa
+        if (!subjectParentsMap[request.data[i].subject_category_id]) {
+            subjectParentsMap[request.data[i].subject_category_id] = [];
         }
-
-        console.log('Created subject parents:', createdSubjectParents);
-
-        // Actualizar subjectCategory con subjectParent
-        let subjectCategory = await this.subjectCategorysRepository.findOne(request.data[i].subject_category_id);
-        if (!subjectCategory)
-            throw new HttpException('error! record not found', HttpStatus.NOT_FOUND);
-
-        subjectCategory.subjectParent = createdSubjectParents;
-        await this.subjectCategorysRepository.save(subjectCategory);
+        subjectParentsMap[request.data[i].subject_category_id].push(...request.data[i].subjectParent);
     }
-    
-    return {
-        createdSubjects,
-        createdSubjectParents
-    };
+
+    // Actualizar subjectParents en subjectCategory
+    for (const [subjectCategoryId, subjectParents] of Object.entries(subjectParentsMap)) {
+        await this.subjectCategoryRepository.updateSubjectParents(parseInt(subjectCategoryId), subjectParents);
+    }
+
+    return created;
 }
 
 

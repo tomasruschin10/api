@@ -56,6 +56,20 @@ export class SubjectCategoryRepository {
         return subjectCategory;
     }
 
+    async updateSubjectParents(id: number, subjectParents: any[]): Promise<any> {
+        let subjectCategory = await this.subjectCategorysRepository.findOne(id, { relations: ['subject', 'subject.subjectParent'] });
+        if (!subjectCategory)
+            throw new HttpException('error! record not found', HttpStatus.NOT_FOUND);
+
+        subjectCategory.subject.forEach(subject => {
+            subject.subjectParent = subjectParents.filter(sp => sp.subject_id === subject.id);
+        });
+
+        await this.subjectCategorysRepository.save(subjectCategory);
+
+        return subjectCategory;
+    }
+
     async delete(id): Promise<any> {
         const subjectCategory = await this.subjectCategorysRepository.findOne(id);
         if (!subjectCategory)
