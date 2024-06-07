@@ -75,7 +75,7 @@ export class SubjectService {
   async update(request: any) {
     const created: any[] = [];
     const subjectParentsMap: { [key: string]: any[] } = {};
-    
+
     for (let i = 0; i < request.data.length; i++) {
         let subject;
         let body = {
@@ -105,12 +105,11 @@ export class SubjectService {
 
     // Actualizar subjectParents en subjectCategory
     for (const [subjectCategoryId, subjectParents] of Object.entries(subjectParentsMap)) {
-        await this.subjectCategoryRepository.updateSubjectParents(parseInt(subjectCategoryId), subjectParents);
+        await this.subjectCategoryRepository.update(parseInt(subjectCategoryId), { subjectParent: subjectParents });
     }
 
     return created;
-}
-
+  }
 
   async delete(id: number) {
     const subject = await this.subjectRepository.delete(id);
