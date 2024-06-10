@@ -31,7 +31,6 @@ export class SubjectService {
         selective: dataItem.selective,
         selectiveSubjects: dataItem.selectiveSubjects,
         chairs: dataItem.chairs,
-        correlativeSubjects: dataItem.correlativeSubjects,
         prefix: dataItem.prefix,
       };
 
