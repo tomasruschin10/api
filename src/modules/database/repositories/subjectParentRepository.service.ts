@@ -72,4 +72,17 @@ export class SubjectParentRepository {
         return 'success';
 
     }
+
+    async deleteAllBySubjectId(subjectId: number): Promise<void> {
+        try {
+            await this.subjectParentsRepository.createQueryBuilder()
+                .delete()
+                .where("subject_id = :subjectId", { subjectId })
+                .execute();
+        } catch (error) {
+            // Manejo de errores si es necesario
+            console.error("Error deleting subjectParents by subjectId:", error);
+            throw new HttpException("Failed to delete subjectParents by subjectId", HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+    }
 }
