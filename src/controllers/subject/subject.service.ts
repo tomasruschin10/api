@@ -98,7 +98,7 @@ export class SubjectService {
         created.push(subject);
 
         // Obtén los subjectParents solo para el subject actual dentro de su categoría
-        const parents = await this.subjectCategoryRepository.getSubjectParentsBySubjectCategoryAndSubjectId(subject.subject_category_id, subject.id);
+        const parents = await this.subjectCategoryRepository.getSubjectParentsBySubjectCategoryAndSubjectId(request.data[i].subject_category_id, subject.id);
         subjectParents.push({ subjectId: subject.id, parents });
     }
 
