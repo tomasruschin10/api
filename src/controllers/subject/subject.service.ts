@@ -90,20 +90,21 @@ export class SubjectService {
         };
 
         if (request.data[i].id) {
-            subject = await this.subjectRepository.update(request.data[i].id, body);
+            await this.subjectRepository.update(request.data[i].id, body);
+            subject = { id: request.data[i].id, ...body }; // Ensure subject has an id
         } else {
             subject = await this.subjectRepository.create(body);
         }
         created.push(subject);
 
-        // Obtén los subjectParents solo para el subject actual
-        const parents = await this.subjectCategoryRepository.getSubjectParentsBySubjectId(subject.id || request.data[i].id);
-        const prueba = await this.subjectCategoryRepository.getAll(65)
-        subjectParents.push({ subjectId: subject.id || request.data[i].id, parents, prueba });
+        // Obtén los subjectParents solo para el subject actual dentro de su categoría
+        const parents = await this.subjectCategoryRepository.getSubjectParentsBySubjectCategoryAndSubjectId(subject.subject_category_id, subject.id);
+        subjectParents.push({ subjectId: subject.id, parents });
     }
 
     return { created, subjectParents };
 }
+
 
   async delete(id: number) {
     const subject = await this.subjectRepository.delete(id);
