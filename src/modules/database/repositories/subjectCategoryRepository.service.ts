@@ -33,13 +33,13 @@ export class SubjectCategoryRepository {
         //.leftJoinAndSelect('s.userSubject', 'su'); solo del estudiante que pregunta
         // filtrar las categorias por el id de la carrera del etudiante
     }
-
-    async getSubjectParentsBySubjectCategoryId(subjectCategoryId: number): Promise<any> {
+    
+    async getSubjectParentsBySubjectId(subjectId: number): Promise<any> {
         return await this.subjectCategorysRepository.createQueryBuilder('s')
-            .leftJoinAndSelect('s.subject', 'ss') 
-            .leftJoinAndSelect('ss.subjectParent', 'ssp')
+            .leftJoin('s.subject', 'ss') 
+            .leftJoin('ss.subjectParent', 'ssp')
             .leftJoinAndSelect('ssp.parent', 'ssps')
-            .where('ss.subject_category_id = :subjectCategoryId', { subjectCategoryId })
+            .where('ss.id = :subjectId', { subjectId })
             .select([
                 'ssp.id', 
                 'ssp.subject_id', 

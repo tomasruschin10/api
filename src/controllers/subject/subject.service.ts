@@ -72,7 +72,6 @@ export class SubjectService {
     const subject = await this.subjectRepository.getById(id);
     return subject;
   }
-
   async update(request: any) {
     const created: any[] = [];
     const subjectParents: any[] = [];
@@ -97,8 +96,9 @@ export class SubjectService {
         }
         created.push(subject);
 
-        const parents = await this.subjectCategoryRepository.getAll(65);
-        subjectParents.push({ subjectCategoryId: 65, parents });
+        // Obtén los subjectParents solo para el subject actual
+        const parents = await this.subjectCategoryRepository.getSubjectParentsBySubjectId(subject.id || request.data[i].id);
+        subjectParents.push({ subjectId: subject.id || request.data[i].id, parents });
     }
 
     return { created, subjectParents };
