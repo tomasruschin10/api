@@ -101,23 +101,24 @@ export class SubjectService {
         await this.subjectParentRepository.deleteAllBySubjectId(subject.id);
 
         for (let parent of request.data[i].subjectParent) {
-            if (parent.key || parent.key === 0 || parent.id) {
-                if (parent.key || parent.key === 0) {
-                    subjectParents.push(created[parent.key].id);
-                }
-                if (parent.id) {
-                    subjectParents.push(parent.id);
-                }
-            }
-        }
-
-        for (let subjectParent of subjectParents) {
-            await this.subjectParentRepository.create({
-                subject_id: subject.id,
-                subject_parent_id: subjectParent
-            });
-        }
-        created.push(subject);
+          if (parent.id) {
+              subjectParents.push(parent.id);
+          }
+      }
+      
+      for (let subjectParentId of subjectParents) {
+          const subjectParent = request.data[i].subjectParent.find(sp => sp.id === subjectParentId);
+      
+          if (subjectParent) {
+              await this.subjectParentRepository.create({
+                  subject_id: subject.id,
+                  subject_parent_id: subjectParentId
+              });
+          } else {
+              console.error(`No se encontró el subjectParent con id ${subjectParentId}`);
+          }
+      }
+      created.push(subject);
     }
     return { created };
 }
