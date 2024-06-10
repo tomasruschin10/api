@@ -2,7 +2,6 @@ import { HttpStatus, Injectable } from "@nestjs/common";
 import { SubjectParentRepository } from "src/modules/database/repositories/subjectParentRepository.service";
 import { SubjectRepository } from "../../modules/database/repositories/subjectRepository.service";
 import { SubjectCategoryRepository } from "src/modules/database/repositories/subjectCategoryRepository.service";
-import { SubjectParent } from "src/models/subjectParent.entity";
 
 @Injectable()
 export class SubjectService {
@@ -77,63 +76,29 @@ export class SubjectService {
   async update(request: any) {
     const created: any[] = [];
     const subjectParents: any[] = [];
-  
+
     for (let i = 0; i < request.data.length; i++) {
-      let subject;
-      let body = {
-        name: request.data[i].name,
-        subject_category_id: request.data[i].subject_category_id,
-        info: request.data[i].info,
-        url: request.data[i].url,
-        selective: request.data[i].selective,
-        selectiveSubjects: request.data[i].selectiveSubjects,
-        chairs: request.data[i].chairs,
-        prefix: request.data[i].prefix,
-      };
-  
-      if (request.data[i].id) {
-        await this.subjectRepository.update(request.data[i].id, body);
-        subject = { id: request.data[i].id, ...body };
-      } else {
-        subject = await this.subjectRepository.create(body);
-      }
-      created.push(subject);
-  
-      if (request.data[i].subjectParent) {
-        const updatedSubjectParents = await this.updateSubjectParents(subject.id, request.data[i].subjectParent);
-        subjectParents.push(updatedSubjectParents);
-      }
+        let subject;
+        let body = {
+            name: request.data[i].name,
+            subject_category_id: request.data[i].subject_category_id,
+            info: request.data[i].info,
+            url: request.data[i].url,
+            selective: request.data[i].selective,
+            selectiveSubjects: request.data[i].selectiveSubjects,
+            chairs: request.data[i].chairs,
+            prefix: request.data[i].prefix,
+        };
+
+        if (request.data[i].id) {
+            subject = await this.subjectRepository.update(request.data[i].id, body);
+        } else {
+            subject = await this.subjectRepository.create(body);
+        }
+        created.push(subject);
     }
-    return { created, subjectParents };
-  }
-  
-  private async updateSubjectParents(subjectId: number, subjectParent: any[]) {
-    const existingSubjectParents = await this.subjectParentRepository.find({ where: { subject_id: subjectId } });
-
-    const existingSubjectParentsMap = new Map(existingSubjectParents.map(sp => [sp.subject_parent_id, sp]));
-
-    const newSubjectParentIds = new Set(subjectParent.map(sp => sp.subject_parent_id));
-
-    for (const existingSubjectParent of existingSubjectParents) {
-      if (!newSubjectParentIds.has(existingSubjectParent.subject_parent_id)) {
-        await this.subjectParentRepository.remove(existingSubjectParent);
-      }
-    }
-
-    for (const newSubjectParent of subjectParent) {
-      if (existingSubjectParentsMap.has(newSubjectParent.subject_parent_id)) {
-        const existingSubjectParent = existingSubjectParentsMap.get(newSubjectParent.subject_parent_id);
-        existingSubjectParent.subject_parent_id = newSubjectParent.subject_parent_id;
-        await this.subjectParentRepository.save(existingSubjectParent);
-      } else {
-        const subjectParent = new SubjectParent();
-        subjectParent.subject_id = subjectId;
-        subjectParent.subject_parent_id = newSubjectParent.subject_parent_id;
-        await this.subjectParentRepository.save(subjectParent);
-      }
-    }
-  }
-
+    return { created };
+}
 
   async delete(id: number) {
     const subject = await this.subjectRepository.delete(id);

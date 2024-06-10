@@ -72,17 +72,4 @@ export class SubjectParentRepository {
         return 'success';
 
     }
-
-    async find(options?: FindManyOptions<SubjectParent>): Promise<SubjectParent[]> {
-        return await this.subjectParentsRepository.find(options);
-    }
-
-    async remove(subjectParent: SubjectParent | SubjectParent[]): Promise<SubjectParent | SubjectParent[]> {
-        return await this.subjectParentsRepository.remove(subjectParent);
-    }
-
-    async save(subjectParent: SubjectParent | SubjectParent[]): Promise<SubjectParent | SubjectParent[]> {
-        return await this.subjectParentsRepository.save(subjectParent);
-    }
-
 }
