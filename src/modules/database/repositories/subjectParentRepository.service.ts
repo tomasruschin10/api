@@ -1,5 +1,5 @@
 import { Injectable, Inject, HttpException, HttpStatus } from '@nestjs/common';
-import { Repository } from "typeorm";
+import { Repository, FindManyOptions } from "typeorm";
 import { SubjectParent } from '../../../models/subjectParent.entity';
 import { SharedService } from 'src/modules/shared/shared.service';
 @Injectable()
@@ -71,6 +71,18 @@ export class SubjectParentRepository {
 
         return 'success';
 
+    }
+
+    async find(options?: FindManyOptions<SubjectParent>): Promise<SubjectParent[]> {
+        return await this.subjectParentsRepository.find(options);
+    }
+
+    async remove(subjectParent: SubjectParent | SubjectParent[]): Promise<SubjectParent | SubjectParent[]> {
+        return await this.subjectParentsRepository.remove(subjectParent);
+    }
+
+    async save(subjectParent: SubjectParent | SubjectParent[]): Promise<SubjectParent | SubjectParent[]> {
+        return await this.subjectParentsRepository.save(subjectParent);
     }
 
 }
