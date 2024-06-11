@@ -95,7 +95,7 @@ export class SubjectService {
 
       if (request.data[i].subjectParent && request.data[i].subjectParent.length > 0) {
         for (let parent of request.data[i].subjectParent) {
-          prueba1.push(parent.id)
+          prueba1.push(parent)
           subjectParents.push(parent);
         }
       }
@@ -111,12 +111,12 @@ export class SubjectService {
         await this.subjectParentRepository.deleteMany(deleteParentIds, subject.id);
       }
 
-      for (let subjectParent of subjectParents) {
-        await this.subjectParentRepository.create({
-          subject_id: subject.id,
-          subject_parent_id: subjectParent
-        });
-      }
+      // for (let subjectParent of subjectParents) {
+      //   await this.subjectParentRepository.create({
+      //     subject_id: subject.id,
+      //     subject_parent_id: subjectParent
+      //   });
+      // }
 
       created.push(subject);
       prueba.push(prueba1)
