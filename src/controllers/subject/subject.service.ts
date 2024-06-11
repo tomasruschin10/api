@@ -92,15 +92,13 @@ export class SubjectService {
 
       for (let parent of request.data[i].subjectParent) {
         if (parent.key || parent.key === 0 || parent.id) {
-          if (parent.key || parent.key === 0) {
-            subjectParents.push(created[parent.key].id);
-          }
-          if (parent.id) {
-            subjectParents.push(parent.id);
+          const parentId = parent.id || (parent.key === 0 ? 0 : created[parent.key].id);
+          if (!subjectParents.includes(parentId)) {
+            subjectParents.push(parentId);
           }
         }
       }
-
+      
       if (request.data[i].id) {
         subject = await this.subjectRepository.update(request.data[i].id, body);
       } else {
@@ -118,7 +116,7 @@ export class SubjectService {
           subject_parent_id: subjectParent
         });
       }
-      
+
       created.push(subject);
     }
     return { created };
