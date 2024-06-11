@@ -75,10 +75,13 @@ export class SubjectService {
 
   async update(request: any) {
     const created: any[] = [];
+    const prueba: any[] = [];
+
 
     for (let i = 0; i < request.data.length; i++) {
       let subject;
       let subjectParents = []
+      let prueba1 = []
       let body = {
         name: request.data[i].name,
         subject_category_id: request.data[i].subject_category_id,
@@ -94,6 +97,7 @@ export class SubjectService {
         if (parent.key || parent.key === 0 || parent.id) {
           const parentId = parent.id || (parent.key === 0 ? 0 : created[parent.key].id);
           if (!subjectParents.includes(parentId)) {
+            prueba1.push(parentId)
             subjectParents.push(parentId);
           }
         }
@@ -118,8 +122,9 @@ export class SubjectService {
       }
 
       created.push(subject);
+      prueba.push(prueba1)
     }
-    return { created };
+    return { created, prueba };
   }
 
   async delete(id: number) {
