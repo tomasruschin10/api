@@ -95,11 +95,8 @@ export class SubjectService {
 
       if (request.data[i].subjectParent && request.data[i].subjectParent.length > 0) {
         for (let parent of request.data[i].subjectParent) {
-          const parentId = parent.id || (parent.key === 0 ? 0 : created[parent.key].id);
-          if (!subjectParents.includes(parentId)) {
-            prueba1.push(parentId)
-            subjectParents.push(parentId);
-          }
+          prueba1.push(parent.id)
+          subjectParents.push(parent);
         }
       }
 
