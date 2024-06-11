@@ -111,12 +111,12 @@ export class SubjectService {
         await this.subjectParentRepository.deleteMany(deleteParentIds, subject.id);
       }
 
-      // for (let subjectParent of subjectParents) {
-      //   await this.subjectParentRepository.create({
-      //     subject_id: subject.id,
-      //     subject_parent_id: subjectParent
-      //   });
-      // }
+      for (let subjectParent of subjectParents) {
+        await this.subjectParentRepository.create({
+          subject_id: subject.id,
+          subject_parent_id: subjectParent.subject_parent_id
+        });
+      }
 
       created.push(subject);
       prueba.push(prueba1)
