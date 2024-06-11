@@ -77,51 +77,52 @@ export class SubjectService {
     const created: any[] = [];
 
     for (let i = 0; i < request.data.length; i++) {
-        let subject;
-        let subjectParents = []
-        let body = {
-            name: request.data[i].name,
-            subject_category_id: request.data[i].subject_category_id,
-            info: request.data[i].info,
-            url: request.data[i].url,
-            selective: request.data[i].selective,
-            selectiveSubjects: request.data[i].selectiveSubjects,
-            chairs: request.data[i].chairs,
-            prefix: request.data[i].prefix,
-        };
+      let subject;
+      let subjectParents = []
+      let body = {
+        name: request.data[i].name,
+        subject_category_id: request.data[i].subject_category_id,
+        info: request.data[i].info,
+        url: request.data[i].url,
+        selective: request.data[i].selective,
+        selectiveSubjects: request.data[i].selectiveSubjects,
+        chairs: request.data[i].chairs,
+        prefix: request.data[i].prefix,
+      };
 
-       
-        if (request.data[i].id) {
-            subject = await this.subjectRepository.update(request.data[i].id, body);
-        } else {
-            subject = await this.subjectRepository.create(body);
-        }
-      
-
-        await this.subjectParentRepository.deleteAllBySubjectId(subject.id);
-
-        for (let parent of request.data[i].subjectParent) {
+      for (let parent of request.data[i].subjectParent) {
+        if (parent.key || parent.key === 0 || parent.id) {
+          if (parent.key || parent.key === 0) {
+            subjectParents.push(created[parent.key].id);
+          }
           if (parent.id) {
-              subjectParents.push(parent.id);
+            subjectParents.push(parent.id);
           }
+        }
+      }
+
+      if (request.data[i].id) {
+        subject = await this.subjectRepository.update(request.data[i].id, body);
+      } else {
+        subject = await this.subjectRepository.create(body);
+      }
+
+      if (request.data[i].deleteParent && request.data[i].deleteParent.length > 0) {
+        const deleteParentIds = request.data[i].deleteParent.map(parent => parent.id);
+        await this.subjectParentRepository.deleteMany(deleteParentIds, subject.id);
+      }
+
+      for (let subjectParent of subjectParents) {
+        await this.subjectParentRepository.create({
+          subject_id: subject.id,
+          subject_parent_id: subjectParent
+        });
       }
       
-      for (let subjectParentId of subjectParents) {
-          const subjectParent = request.data[i].subjectParent.find(sp => sp.id === subjectParentId);
-      
-          if (subjectParent) {
-              await this.subjectParentRepository.create({
-                  subject_id: subject.id,
-                  subject_parent_id: subjectParentId
-              });
-          } else {
-              console.error(`No se encontró el subjectParent con id ${subjectParentId}`);
-          }
-      }
       created.push(subject);
     }
     return { created };
-}
+  }
 
   async delete(id: number) {
     const subject = await this.subjectRepository.delete(id);
