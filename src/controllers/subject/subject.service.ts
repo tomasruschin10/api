@@ -81,7 +81,6 @@ export class SubjectService {
     for (let i = 0; i < request.data.length; i++) {
       let subject;
       let subjectParents = []
-      let prueba1 = []
       let body = {
         name: request.data[i].name,
         subject_category_id: request.data[i].subject_category_id,
@@ -95,7 +94,6 @@ export class SubjectService {
 
       if (request.data[i].subjectParent && request.data[i].subjectParent.length > 0) {
         for (let parent of request.data[i].subjectParent) {
-          prueba1.push(parent)
           subjectParents.push(parent);
         }
       }
@@ -116,9 +114,8 @@ export class SubjectService {
       }
 
       created.push(subject);
-      prueba.push(prueba1)
     }
-    return { created, prueba };
+    return { created };
   }
 
   async delete(id: number) {
