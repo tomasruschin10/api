@@ -94,7 +94,7 @@ export class SubjectService {
       };
 
       for (let parent of request.data[i].subjectParent) {
-        if (Array.isArray(parent) && parent.length > 0) {
+        if (parent.length > 0) {
           prueba1.push(parent);
           for (let item of parent) {
             if (item.id) {
