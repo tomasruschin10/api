@@ -94,16 +94,21 @@ export class SubjectService {
       };
 
       for (let parent of request.data[i].subjectParent) {
-        prueba1.push(parent)
-        if (parent.key || parent.key === 0 || parent.id) {
-          const parentId = parent.id || (parent.key === 0 ? 0 : created[parent.key].id);
-          if (!subjectParents.includes(parentId)) {
-            prueba1.push(parentId)
-            subjectParents.push(parentId);
+        if (Array.isArray(parent) && parent.length > 0) {
+          prueba1.push(parent);
+          for (let item of parent) {
+            if (item.id) {
+              const parentId = item.id;
+              if (!subjectParents.includes(parentId)) {
+                prueba1.push(parentId);
+                subjectParents.push(parentId);
+              }
+            }
           }
         }
       }
-      
+
+
       if (request.data[i].id) {
         subject = await this.subjectRepository.update(request.data[i].id, body);
       } else {
