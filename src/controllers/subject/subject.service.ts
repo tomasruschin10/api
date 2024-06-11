@@ -106,10 +106,7 @@ export class SubjectService {
         subject = await this.subjectRepository.create(body);
       }
 
-      if (request.data[i].deleteParent && request.data[i].deleteParent.length > 0) {
-        const deleteParentIds = request.data[i].deleteParent.map(parent => parent.id);
-        await this.subjectParentRepository.deleteMany(deleteParentIds, subject.id);
-      }
+      await this.subjectParentRepository.deleteAllBySubjectId(subject.id);
 
       for (let subjectParent of subjectParents) {
         await this.subjectParentRepository.create({
