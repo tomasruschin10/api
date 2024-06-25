@@ -75,9 +75,7 @@ export class SubjectService {
 
   async update(request: any) {
     const created: any[] = [];
-    const prueba: any[] = [];
-
-
+    
     for (let i = 0; i < request.data.length; i++) {
       let subject;
       let subjectParents = []
@@ -115,6 +113,7 @@ export class SubjectService {
 
       created.push(subject);
     }
+    await this.subjectRepository.deleteMany(request.deleteData)
     return { created };
   }
 
