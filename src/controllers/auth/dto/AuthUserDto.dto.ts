@@ -53,7 +53,11 @@ export class authRegisterDto {
     @ApiProperty()
     @IsNotEmpty()
     role_id: number
+
+    @ApiProperty()
+    isConfirm: boolean;
 } 
+
 export class authUpdateDto {
     @ApiProperty()
     username: string;
@@ -93,6 +97,9 @@ export class authUpdateDto {
 
     @ApiProperty()
     device_token: string;
+
+    @ApiProperty()
+    isConfirm: boolean;
 } 
 
 export class authUserDto {
@@ -146,12 +153,14 @@ export class authUserDto {
 
     @ApiProperty()
     updated_at: Date
+
+    @ApiProperty()
+    isConfirm: boolean;
 }
 
 export class AuthUserDtoDto {
     userOrEmail: string;
     password: string;
-
 }
 
 export class TokenDto {

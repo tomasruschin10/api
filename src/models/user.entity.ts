@@ -103,4 +103,7 @@ export class User {
     referencedColumnName: "user_id",
   })
   userRole: UserRole[];
+
+  @Column({ default: false })
+  isConfirm: boolean;
 }

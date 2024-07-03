@@ -13,6 +13,7 @@ export interface IRegisterBody {
     device_token: string;
     google_user: boolean;
     apple_user: boolean;
+    isConfirm: boolean;
 } 
 
 export interface IUpdateBody {
@@ -29,4 +30,5 @@ export interface IUpdateBody {
     career_id: number;
     image: Express.Multer.File;
     device_token: string;
+    isConfirm: boolean;
 } 
