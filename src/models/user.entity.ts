@@ -106,4 +106,10 @@ export class User {
 
   @Column({ default: false })
   isConfirm: boolean;
+
+  @Column({ nullable: true })
+  emailConfirmationCode: string;
+
+  @Column({ type: 'timestamp', nullable: true })
+  emailConfirmationCodeGeneratedAt: Date;
 }

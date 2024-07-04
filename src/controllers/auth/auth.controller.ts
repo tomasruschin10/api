@@ -189,6 +189,30 @@ export class AuthController {
     return await this.authService.updatePassToken(id, req);
   }
 
+
+  @Post('confirm-email/:id')
+  @ApiParam({ name: 'id', required: true, description: 'User Identifier' })
+  @ApiResponse({ status: 200, description: 'Email confirmed successfully' })
+  @ApiResponse({ status: 400, description: 'Invalid or expired confirmation code' })
+  @ApiResponse({ status: 404, description: 'User not found' })
+  async confirmEmail(@Param('id') id: number, @Body() body: { code: string }) {
+    if (!body.code) {
+      throw new BadRequestException('Confirmation code is required');
+    }
+
+    return await this.authService.confirmEmail(id, body.code);
+  }
+
+  @UseGuards(JwtAuthGuard)
+  @Put('generate-email-confirmation-code/:id')
+  @ApiParam({ name: 'id', required: true, description: 'User Identifier' })
+  @ApiResponse({ status: 200, description: 'Email confirmation code generated successfully' })
+  @ApiResponse({ status: 401, description: 'Not authenticated' })
+  @ApiResponse({ status: 404, description: 'User not found' })
+  async generateEmailConfirmationCode(@Param('id') id: number) {
+    return await this.authService.generateEmailConfirmationCode(id);
+  }
+
   async uploadFile(file) {
     if (file) {
       let tm = Date.now();

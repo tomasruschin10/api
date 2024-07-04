@@ -30,7 +30,7 @@ export class AuthService {
     private mailPasswordHtml: MailPasswordHtml,
     private mailPasswordCodeHtml: MailPasswordCodeHtml,
     private firestorageService: FirestorageService
-  ) {}
+  ) { }
 
   async login(userOrEmail: string, password: string) {
     const user = await this.userRepository.findUsername(userOrEmail);
@@ -55,19 +55,19 @@ export class AuthService {
     return user;
   }
 
-  async generateResetCode(email: string): Promise<string> {
-    const resetCode = crypto.randomBytes(6).toString("hex");
+  async generateEmailConfirmationCode(userId: number) {
+    const code = Math.floor(100000 + Math.random() * 900000).toString();
+    await this.userRepository.update(userId, {
+      emailConfirmationCode: code,
+      emailConfirmationCodeGeneratedAt: new Date(),
+    });
 
-    const user = await this.userRepository.findUsername(email);
+    const user = await this.userRepository.findById(userId);
 
-    user.resetCode = resetCode;
+    if (!user) {
+      throw new Error('Usuario no encontrado');
+    }
 
-    await this.userRepository.saveUser(user);
-
-    return resetCode;
-  }
-
-  async sendResetCodeByEmail(email: string, resetCode: string): Promise<void> {
     const transporter = nodemailer.createTransport({
       service: "gmail",
       auth: {
@@ -78,14 +78,21 @@ export class AuthService {
 
     const mailOptions = {
       from: "muyfadu@gmail.com",
-      to: email,
+      to: user.email,
       subject: "Código de reinicio de contraseña",
       html: `
       <html>
       <body>
         <h1>Código de recuperación de contraseña</h1>
         <p>¡Hola este es tu código de recuperación!</p>
-        <p>${resetCode}</p>
+        <table>
+        <tr>
+          ${code
+          .split("")
+          .map((letter) => `<td>${letter}</td>`)
+          .join("")}
+        </tr>
+      </table>
         <p>Si no lo solicitaste, puedes ignorar este correo electrónico.</p>
         <p>¡Gracias!</p>
       </body>
@@ -98,6 +105,32 @@ export class AuthService {
     } catch (error) {
       console.error("Error al enviar el correo electrónico:", error);
     }
+    return code;
+  }
+
+  async confirmEmail(userId: number, code: string) {
+    const user = await this.userRepository.findById(userId);
+    if (!user) {
+      throw new BadRequestException('User not found');
+    }
+
+    if (user.emailConfirmationCode !== code) {
+      throw new BadRequestException('Invalid confirmation code');
+    }
+
+    const now = new Date();
+    const expirationTime = 24 * 60 * 60 * 1000;
+    if (now.getTime() - new Date(user.emailConfirmationCodeGeneratedAt).getTime() > expirationTime) {
+      throw new BadRequestException('Confirmation code expired');
+    }
+
+    await this.userRepository.update(userId, {
+      isConfirm: true,
+      emailConfirmationCode: null,
+      emailConfirmationCodeGeneratedAt: null,
+    });
+
+    return { message: 'Email confirmed successfully' };
   }
 
   async register(registerData: IRegisterBody | any, image) {
@@ -123,28 +156,28 @@ export class AuthService {
       }
 
       return await this.userRepository.findById(user.id);
-      
+
     } else if (registerData.apple_user) {
       const existingAppleUser =
-      await this.userRepository.findUserByAppleEmail(
-        registerData.email,
-        registerData.apple_user
-      );
+        await this.userRepository.findUserByAppleEmail(
+          registerData.email,
+          registerData.apple_user
+        );
 
-    if (existingAppleUser) {
-      throw new BadRequestException(["El email de Apple ya está en uso"]);
-    }
+      if (existingAppleUser) {
+        throw new BadRequestException(["El email de Apple ya está en uso"]);
+      }
 
-    registerData.image_id = image
-      ? (await this.imageRepository.create(image)).id
-      : 1;
-    const user = await this.userRepository.register(registerData);
-    await this.userRoleRepository.saveUserRole(user.id, registerData.role_id);
+      registerData.image_id = image
+        ? (await this.imageRepository.create(image)).id
+        : 1;
+      const user = await this.userRepository.register(registerData);
+      await this.userRoleRepository.saveUserRole(user.id, registerData.role_id);
 
-    if (!registerData.uid) {
-      await this.update(user.id, { uid: user.id }, null);
-    }
-    return await this.userRepository.findById(user.id);
+      if (!registerData.uid) {
+        await this.update(user.id, { uid: user.id }, null);
+      }
+      return await this.userRepository.findById(user.id);
 
     } else {
       const emailInUse = await this.userRepository.findUsername(
@@ -255,9 +288,9 @@ export class AuthService {
         <table>
         <tr>
           ${token
-            .split("")
-            .map((letter) => `<td>${letter}</td>`)
-            .join("")}
+          .split("")
+          .map((letter) => `<td>${letter}</td>`)
+          .join("")}
         </tr>
       </table>
         <p>Si no lo solicitaste, puedes ignorar este correo electrónico.</p>
