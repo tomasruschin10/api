@@ -103,7 +103,7 @@ export class AuthService {
     try {
       await transporter.sendMail(mailOptions);
     } catch (error) {
-      console.error("Error al enviar el correo electrónico:", error);
+      throw new Error("Error al enviar el correo electrónico");
     }
     return code;
   }
