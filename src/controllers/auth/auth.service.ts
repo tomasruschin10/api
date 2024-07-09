@@ -122,7 +122,7 @@ export class AuthService {
     }
 
     const now = new Date();
-    const expirationTime = 24 * 60 * 60 * 1000;
+    const expirationTime = 10 * 60 * 1000;
     if (now.getTime() - new Date(user.emailConfirmationCodeGeneratedAt).getTime() > expirationTime) {
       throw new BadRequestException('Confirmation code expired');
     }
@@ -132,6 +132,48 @@ export class AuthService {
       emailConfirmationCode: null,
       emailConfirmationCodeGeneratedAt: null,
     });
+
+
+    const transporter = nodemailer.createTransport({
+      service: "gmail",
+      auth: {
+        user: "muyfadu@gmail.com",
+        pass: "mmho lkyt hmyf owju",
+      },
+    });
+
+    const mailOptions = {
+      from: "muyfadu@gmail.com",
+      to: user.email,
+      subject: "Email confirmado",
+      html: `
+      <html>
+      <body>
+        <h1>Email confirmado con éxito</h1>
+        <p>¡Hola este mail es para avisarte que tu email fue confirmado con éxito!</p>
+        <table>
+        <tr>
+          ${code
+          .split("")
+          .map((letter) => `<td>${letter}</td>`)
+          .join("")}
+        </tr>
+      </table>
+        <p>Si no fuiste tú, puedes contactarnos.</p>
+        <p>¡Gracias!</p>
+      </body>
+    </html>
+    `,
+    };
+
+    try {
+      await transporter.sendMail(mailOptions);
+    } catch (error) {
+      throw new BadRequestException(
+        "Error al enviar el correo electrónico. Por favor, inténtalo de nuevo.",
+        error
+      );
+    }
 
     return { message: 'Email confirmed successfully' };
   }
