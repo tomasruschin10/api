@@ -79,12 +79,12 @@ export class AuthService {
     const mailOptions = {
       from: "muyfadu@gmail.com",
       to: user.email,
-      subject: "Código de reinicio de contraseña",
+      subject: "Confirmá tu email",
       html: `
       <html>
       <body>
-        <h1>Código de recuperación de contraseña</h1>
-        <p>¡Hola este es tu código de recuperación!</p>
+        <h1>Código para confirmar mail</h1>
+        <p>¡Hola este es tu código para confirmar!</p>
         <table>
         <tr>
           ${code
@@ -103,7 +103,10 @@ export class AuthService {
     try {
       await transporter.sendMail(mailOptions);
     } catch (error) {
-      throw new Error("Error al enviar el correo electrónico");
+      throw new BadRequestException(
+        "Error al enviar el correo electrónico. Por favor, inténtalo de nuevo.",
+        error
+      );
     }
     return code;
   }
