@@ -190,7 +190,7 @@ export class AuthController {
   }
 
 
-  @Post('confirm-email/:id')
+  @Post("confirm-email/:id")
   @ApiParam({ name: 'id', required: true, description: 'User Identifier' })
   @ApiResponse({ status: 200, description: 'Email confirmed successfully' })
   @ApiResponse({ status: 400, description: 'Invalid or expired confirmation code' })
@@ -204,7 +204,7 @@ export class AuthController {
   }
 
   @UseGuards(JwtAuthGuard)
-  @Put('generate-email-confirmation-code/:id')
+  @Put("generate-email-confirmation-code/:id")
   @ApiParam({ name: 'id', required: true, description: 'User Identifier' })
   @ApiResponse({ status: 200, description: 'Email confirmation code generated successfully' })
   @ApiResponse({ status: 401, description: 'Not authenticated' })
