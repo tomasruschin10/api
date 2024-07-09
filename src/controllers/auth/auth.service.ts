@@ -56,17 +56,21 @@ export class AuthService {
   }
 
   async generateEmailConfirmationCode(userId: number) {
-    const code = Math.floor(100000 + Math.random() * 900000).toString();
-    await this.userRepository.update(userId, {
-      emailConfirmationCode: code,
-      emailConfirmationCodeGeneratedAt: new Date(),
-    });
-
     const user = await this.userRepository.findById(userId);
 
     if (!user) {
       throw new Error('Usuario no encontrado');
     }
+
+    if (user.isConfirm) {
+      return { message: "El correo electrónico ya está confirmado" };
+    }
+
+    const code = Math.floor(100000 + Math.random() * 900000).toString();
+    await this.userRepository.update(userId, {
+      emailConfirmationCode: code,
+      emailConfirmationCodeGeneratedAt: new Date(),
+    });
 
     const transporter = nodemailer.createTransport({
       service: "gmail",
@@ -81,23 +85,23 @@ export class AuthService {
       to: user.email,
       subject: "Confirmá tu email",
       html: `
-      <html>
-      <body>
-        <h1>Código para confirmar mail</h1>
-        <p>¡Hola este es tu código para confirmar!</p>
-        <table>
-        <tr>
-          ${code
+        <html>
+        <body>
+          <h1>Código para confirmar mail</h1>
+          <p>¡Hola este es tu código para confirmar!</p>
+          <table>
+          <tr>
+            ${code
           .split("")
           .map((letter) => `<td>${letter}</td>`)
           .join("")}
-        </tr>
-      </table>
-        <p>Si no lo solicitaste, puedes ignorar este correo electrónico.</p>
-        <p>¡Gracias!</p>
-      </body>
-    </html>
-    `,
+          </tr>
+        </table>
+          <p>Si no lo solicitaste, puedes ignorar este correo electrónico.</p>
+          <p>¡Gracias!</p>
+        </body>
+      </html>
+      `,
     };
 
     try {
@@ -108,8 +112,10 @@ export class AuthService {
         error
       );
     }
-    return code;
+
+    return { message: "Código de confirmación enviado" };
   }
+
 
   async confirmEmail(userId: number, code: string) {
     const user = await this.userRepository.findById(userId);
