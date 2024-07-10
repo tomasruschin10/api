@@ -133,7 +133,7 @@ export class AuthService {
       throw new BadRequestException('Confirmation code expired');
     }
 
-    const updatedUser = await this.userRepository.update(userId, {
+   await this.userRepository.update(userId, {
       isConfirm: true,
       emailConfirmationCode: null,
       emailConfirmationCodeGeneratedAt: null,
@@ -180,6 +180,7 @@ export class AuthService {
         error
       );
     }
+    const updatedUser = await this.userRepository.findById(userId);
 
     return updatedUser;
   }
