@@ -133,7 +133,7 @@ export class AuthService {
       throw new BadRequestException('Confirmation code expired');
     }
 
-    await this.userRepository.update(userId, {
+    const updatedUser = await this.userRepository.update(userId, {
       isConfirm: true,
       emailConfirmationCode: null,
       emailConfirmationCodeGeneratedAt: null,
@@ -181,7 +181,7 @@ export class AuthService {
       );
     }
 
-    return user;
+    return updatedUser;
   }
 
   async register(registerData: IRegisterBody | any, image) {
