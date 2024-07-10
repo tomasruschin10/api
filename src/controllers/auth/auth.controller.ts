@@ -200,7 +200,8 @@ export class AuthController {
       throw new BadRequestException('Confirmation code is required');
     }
 
-    const token = await this.authService.confirmEmail(id, body.code);
+    const user = await this.authService.confirmEmail(id, body.code);
+    const token = await this.generateToken(user);
     return res.status(HttpStatus.OK).json({ token: token });
 
   }
