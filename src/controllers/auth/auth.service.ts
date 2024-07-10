@@ -181,7 +181,7 @@ export class AuthService {
       );
     }
 
-    return { message: 'Email confirmed successfully' };
+    return user;
   }
 
   async register(registerData: IRegisterBody | any, image) {
