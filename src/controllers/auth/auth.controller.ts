@@ -195,12 +195,14 @@ export class AuthController {
   @ApiResponse({ status: 200, description: 'Email confirmed successfully' })
   @ApiResponse({ status: 400, description: 'Invalid or expired confirmation code' })
   @ApiResponse({ status: 404, description: 'User not found' })
-  async confirmEmail(@Param('id') id: number, @Body() body: { code: string }) {
+  async confirmEmail(@Param('id') id: number, @Body() body: { code: string }, @Response() res) {
     if (!body.code) {
       throw new BadRequestException('Confirmation code is required');
     }
 
-    return await this.authService.confirmEmail(id, body.code);
+    const token = await this.authService.confirmEmail(id, body.code);
+    return res.status(HttpStatus.OK).json({ token: token });
+
   }
 
   @UseGuards(JwtAuthGuard)
