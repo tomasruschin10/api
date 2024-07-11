@@ -133,7 +133,7 @@ export class AuthService {
       throw new BadRequestException('Confirmation code expired');
     }
 
-   await this.userRepository.update(userId, {
+    await this.userRepository.update(userId, {
       isConfirm: true,
       emailConfirmationCode: null,
       emailConfirmationCodeGeneratedAt: null,
@@ -158,12 +158,6 @@ export class AuthService {
         <h1>Email confirmado con éxito</h1>
         <p>¡Hola este mail es para avisarte que tu email fue confirmado con éxito!</p>
         <table>
-        <tr>
-          ${code
-          .split("")
-          .map((letter) => `<td>${letter}</td>`)
-          .join("")}
-        </tr>
       </table>
         <p>Si no fuiste tú, puedes contactarnos.</p>
         <p>¡Gracias!</p>
