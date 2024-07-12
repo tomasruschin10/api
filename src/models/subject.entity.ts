@@ -23,6 +23,9 @@ export class Subject {
   name: string;
 
   @Column({ nullable: true })
+  label: string;
+
+  @Column({ nullable: true })
   info: string;
 
   @Column({ nullable: true })
