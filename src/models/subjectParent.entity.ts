@@ -2,7 +2,6 @@
 import { Entity, Column, PrimaryGeneratedColumn, OneToMany, OneToOne, ManyToOne, JoinColumn, CreateDateColumn, UpdateDateColumn } from 'typeorm';
 import { Moment } from 'moment';
 import { Subject } from './subject.entity';
-import { OrSubjectParent } from './orSubjectParent.entity';
 
 @Entity({name:'subject_parents'})
 export class SubjectParent {
@@ -38,7 +37,4 @@ export class SubjectParent {
   })
   parent: Subject;
 
-
-  @OneToMany(() => OrSubjectParent, orSubjectParent => orSubjectParent.subjectParent, { cascade: true })
-  orSubjectParents: OrSubjectParent[];
 }

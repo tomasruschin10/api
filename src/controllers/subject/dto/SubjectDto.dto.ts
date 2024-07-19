@@ -44,9 +44,6 @@ class subjectBody {
 
     @ApiProperty()
     subjectParent?: subjectParent[]
-
-    @ApiProperty()
-    orSubjectParent?: orSubjectParentDto[];
 }
 
 class subjectParent {
@@ -56,18 +53,4 @@ class subjectParent {
     @ApiProperty()
     id: number
     
-}
-
-class orSubjectParentDto {
-    @ApiProperty()
-    id: number;
-
-    @ApiProperty()
-    subject_id: number;
-
-    @ApiProperty()
-    subject_parent_id: number;
-
-    @ApiProperty({ type: subjectDto })
-    parent: subjectDto;
 }
