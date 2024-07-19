@@ -170,7 +170,7 @@ export const databaseProviders = [
     provide: 'SUBJECT_PARENT_REPOSITORY',
     useFactory: (connection: Connection) => connection.getRepository(SubjectParent),
     inject: ['DbConnectionToken'],
-  }
+  },
   {
     provide: 'SUBJECT_PARENT_OR_REPOSITORY',
     useFactory: (connection: Connection) => connection.getRepository(SubjectParentOr),
