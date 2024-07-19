@@ -4,7 +4,7 @@ import { Moment } from 'moment';
 import { Subject } from './subject.entity';
 
 @Entity()
-export class OrSubjectParent {
+export class OrSubjectParents {
   @PrimaryGeneratedColumn()
   id: number;
 
@@ -57,6 +57,6 @@ export class SubjectParent {
   })
   parent: Subject;
 
-  @OneToMany(() => OrSubjectParent, orSubjectParents => orSubjectParents.subjectParent, { cascade: true })
-  orCorrelatives: OrSubjectParent[];
+  @OneToMany(() => OrSubjectParents, orSubjectParents => orSubjectParents.subjectParent, { cascade: true })
+  orSubjectParents: OrSubjectParents[];
 }
