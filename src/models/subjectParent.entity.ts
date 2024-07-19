@@ -16,7 +16,7 @@ export class OrSubjectParent {
 
   @ManyToOne(() => Subject, { onDelete: 'CASCADE', onUpdate: 'CASCADE' })
   @JoinColumn({ name: 'or_subject_id', referencedColumnName: 'id' })
-  orSubject: Subject;
+  orSubjectParents: Subject;
 
   @ManyToOne(() => SubjectParent, subjectParent => subjectParent.orSubjectParents, { onDelete: 'CASCADE', onUpdate: 'CASCADE' })
   @JoinColumn({ name: 'subject_parent_id', referencedColumnName: 'id' })
