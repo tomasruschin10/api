@@ -28,6 +28,7 @@ import { ExtraScore } from 'src/models/extraScore.entity';
 import { Config } from 'src/models/config.entity';
 import { GeneralNotification } from 'src/models/generalNotification.entity';
 import { SubjectParent } from 'src/models/subjectParent.entity';
+import { SubjectParentOr } from 'src/models/subjectParentOr.entity';
 
 export const databaseProviders = [ 
   {
@@ -168,6 +169,11 @@ export const databaseProviders = [
   {
     provide: 'SUBJECT_PARENT_REPOSITORY',
     useFactory: (connection: Connection) => connection.getRepository(SubjectParent),
+    inject: ['DbConnectionToken'],
+  }
+  {
+    provide: 'SUBJECT_PARENT_OR_REPOSITORY',
+    useFactory: (connection: Connection) => connection.getRepository(SubjectParentOr),
     inject: ['DbConnectionToken'],
   }
 ];
