@@ -16,7 +16,7 @@ export class OrSubjectParents {
 
   @ManyToOne(() => Subject, { onDelete: 'CASCADE', onUpdate: 'CASCADE' })
   @JoinColumn({ name: 'or_subject_id', referencedColumnName: 'id' })
-  orSubjectParents: Subject;
+  orSubject: Subject;
 
   @ManyToOne(() => SubjectParent, subjectParent => subjectParent.orSubjectParents, { onDelete: 'CASCADE', onUpdate: 'CASCADE' })
   @JoinColumn({ name: 'subject_parent_id', referencedColumnName: 'id' })
@@ -35,22 +35,21 @@ export class SubjectParent {
   subject_parent_id: number;
 
   @CreateDateColumn({ type: "timestamp" })
-  created_at: Moment
+  created_at: Moment;
 
   @UpdateDateColumn({ type: "timestamp", nullable: true })
-  updated_at: Moment
+  updated_at: Moment;
 
+  // Relaciones
 
-  //relations
-
-  @ManyToOne(() => Subject, subject => subject.id, { onDelete: 'CASCADE', onUpdate: 'CASCADE' })
+  @ManyToOne(() => Subject, { onDelete: 'CASCADE', onUpdate: 'CASCADE' })
   @JoinColumn({
     name: 'subject_id',
     referencedColumnName: 'id'
   })
   subject: Subject;
 
-  @ManyToOne(() => Subject, parent => parent.id, { onDelete: 'CASCADE', onUpdate: 'CASCADE' })
+  @ManyToOne(() => Subject, { onDelete: 'CASCADE', onUpdate: 'CASCADE' })
   @JoinColumn({
     name: 'subject_parent_id',
     referencedColumnName: 'id'
