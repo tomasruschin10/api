@@ -37,10 +37,4 @@ export class SubjectParent {
   })
   parent: Subject;
 
-  @ManyToOne(() => Subject, parent => parent.id, { onDelete: 'CASCADE', onUpdate: 'CASCADE' })
-  @JoinColumn({
-    name: 'orsubject_parent_id',
-    referencedColumnName: 'id'
-  })
-  orparent: Subject;
 }
