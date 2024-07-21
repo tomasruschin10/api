@@ -40,6 +40,9 @@ export class Subject {
   @Column("simple-array", { nullable: true })
   chairs: string[];
 
+  @Column("json", { nullable: true })
+  conditions: any;
+
   @Column({ nullable: true })
   url: string;
 

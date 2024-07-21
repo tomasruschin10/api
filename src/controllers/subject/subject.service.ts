@@ -30,6 +30,7 @@ export class SubjectService {
         selective: dataItem.selective,
         selectiveSubjects: dataItem.selectiveSubjects,
         chairs: dataItem.chairs,
+        conditions: dataItem.conditions,
         label: dataItem.label,
         prefix: dataItem.prefix,
       };
@@ -90,6 +91,7 @@ export class SubjectService {
         chairs: request.data[i].chairs,
         label: request.data[i].label,
         prefix: request.data[i].prefix,
+        conditions: request.data[i].conditions, 
       };
 
       if (request.data[i].subjectParent && request.data[i].subjectParent.length > 0) {
