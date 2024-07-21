@@ -76,7 +76,7 @@ export class SubjectService {
 
   async update(request: any) {
     const created: any[] = [];
-    
+
     for (let i = 0; i < request.data.length; i++) {
       let subject;
       let subjectParents = []
@@ -107,10 +107,20 @@ export class SubjectService {
       await this.subjectParentRepository.deleteAllBySubjectId(subject.id);
 
       for (let subjectParent of subjectParents) {
-        await this.subjectParentRepository.create({
+        const newSubjectParent = await this.subjectParentRepository.create({
           subject_id: subject.id,
           subject_parent_id: subjectParent.subject_parent_id
         });
+
+        // Manejar orSubjectParents si existen
+        if (subjectParent.orSubjectParents && subjectParent.orSubjectParents.length > 0) {
+          for (let orParent of subjectParent.orSubjectParents) {
+            await this.subjectParentRepository.create({
+              subject_parent_id: newSubjectParent.id,
+              subject_id: orParent.subject_id
+            });
+          }
+        }
       }
 
       created.push(subject);

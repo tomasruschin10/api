@@ -1,23 +1,37 @@
 import { Injectable, Inject, HttpException, HttpStatus } from '@nestjs/common';
 import { Repository, FindManyOptions } from "typeorm";
 import { SubjectParent } from '../../../models/subjectParent.entity';
+import { SubjectParentOr } from 'src/models/subjectParentOr.entity';
 import { SharedService } from 'src/modules/shared/shared.service';
 @Injectable()
 export class SubjectParentRepository {
     constructor(
         @Inject('SUBJECT_PARENT_REPOSITORY')
         private subjectParentsRepository: Repository<SubjectParent>,
+        @Inject('SUBJECT_PARENT_OR_REPOSITORY')
+        private subjectParentOrRepository: Repository<SubjectParentOr>,
         private sharedService: SharedService
     ) { }
 
 
     async create(request): Promise<any> {
-        //save subjectParent
-        const subjectParent = await this.subjectParentsRepository.create(request)
-        await this.subjectParentsRepository.save(subjectParent)
+        const { orSubjectParents, ...subjectParentData } = request;
 
-        //return
-        return subjectParent
+        // Crear el objeto SubjectParent
+        const subjectParent = this.subjectParentsRepository.create(subjectParentData);
+        await this.subjectParentsRepository.save(subjectParent);
+
+        if (orSubjectParents && orSubjectParents.length > 0) {
+            const subjectParentOrs = orSubjectParents.map(orParent =>
+                this.subjectParentOrRepository.create({
+                    subject_parent_id: subjectParent.id,
+                    subject_id: orParent.subject_id
+                })
+            );
+            await this.subjectParentOrRepository.save(subjectParentOrs);
+        }
+
+        return subjectParent;
     }
 
     async getAll(): Promise<SubjectParent[] | string> {
