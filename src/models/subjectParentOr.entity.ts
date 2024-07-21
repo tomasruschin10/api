@@ -6,32 +6,32 @@ import { SubjectParent } from './subjectParent.entity';
 @Entity({ name: 'subject_parents_or' })
 export class SubjectParentOr {
     @PrimaryGeneratedColumn()
-  id: number;
+    id: number;
 
-  @Column()
-  subject_parent_id: number;
+    @Column()
+    subject_parent_id: number;
 
-  @Column()
-  subject_id: number;
+    @Column()
+    subject_id: number;
 
-  @CreateDateColumn({ type: "timestamp" })
-  created_at: Moment;
+    @CreateDateColumn({ type: "timestamp" })
+    created_at: Moment;
 
-  @UpdateDateColumn({ type: "timestamp", nullable: true })
-  updated_at: Moment;
+    @UpdateDateColumn({ type: "timestamp", nullable: true })
+    updated_at: Moment;
 
-  // Relations
-  @ManyToOne(() => SubjectParent, subjectParent => subjectParent.id, { onDelete: 'CASCADE', onUpdate: 'CASCADE' })
-  @JoinColumn({
-    name: 'subject_parent_id',
-    referencedColumnName: 'id'
-  })
-  subjectParent: SubjectParent;
-
-  @ManyToOne(() => Subject, subject => subject.id, { onDelete: 'CASCADE', onUpdate: 'CASCADE' })
-  @JoinColumn({
-    name: 'subject_id',
-    referencedColumnName: 'id'
-  })
-  subject: Subject;
+    // Relations
+    @ManyToOne(() => Subject, parent => parent.id, { onDelete: 'CASCADE', onUpdate: 'CASCADE' })
+    @JoinColumn({
+        name: 'subject_parent_id',
+        referencedColumnName: 'id'
+    })
+    parent: Subject;
+    
+    @ManyToOne(() => Subject, subject => subject.id, { onDelete: 'CASCADE', onUpdate: 'CASCADE' })
+    @JoinColumn({
+        name: 'subject_id',
+        referencedColumnName: 'id'
+    })
+    subject: Subject;
 }

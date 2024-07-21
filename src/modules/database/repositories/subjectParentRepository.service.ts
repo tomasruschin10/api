@@ -15,23 +15,12 @@ export class SubjectParentRepository {
 
 
     async create(request): Promise<any> {
-        const { orSubjectParents, ...subjectParentData } = request;
+        //save subjectParent
+        const subjectParent = await this.subjectParentsRepository.create(request)
+        await this.subjectParentsRepository.save(subjectParent)
 
-        // Crear el objeto SubjectParent
-        const subjectParent = this.subjectParentsRepository.create(subjectParentData);
-        await this.subjectParentsRepository.save(subjectParent);
-
-        if (orSubjectParents && orSubjectParents.length > 0) {
-            const subjectParentOrs = orSubjectParents.map(orParent =>
-                this.subjectParentOrRepository.create({
-                    subject_parent_id: subjectParent.id,
-                    subject_id: orParent.subject_id
-                })
-            );
-            await this.subjectParentOrRepository.save(subjectParentOrs);
-        }
-
-        return subjectParent;
+        //return
+        return subjectParent
     }
 
     async getAll(): Promise<SubjectParent[] | string> {
