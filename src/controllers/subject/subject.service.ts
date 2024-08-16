@@ -111,7 +111,8 @@ export class SubjectService {
       for (let subjectParent of subjectParents) {
         await this.subjectParentRepository.create({
           subject_id: subject.id,
-          subject_parent_id: subjectParent.subject_parent_id
+          subject_parent_id: subjectParent.subject_parent_id,
+          orCorrelative: subjectParent.orCorrelative
         });
       }
 

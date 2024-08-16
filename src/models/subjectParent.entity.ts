@@ -21,8 +21,6 @@ export class SubjectParent {
   updated_at: Moment
 
 
-  //relations
-
   @ManyToOne(() => Subject, subject => subject.id , {onDelete: 'CASCADE', onUpdate: 'CASCADE'})
   @JoinColumn({
       name: 'subject_id',
@@ -37,4 +35,6 @@ export class SubjectParent {
   })
   parent: Subject;
 
+  @Column("simple-array", { nullable: true })
+  orCorrelative: number[];
 }
