@@ -50,107 +50,133 @@ export class SubjectCategoryService {
       let points = 0;
       let count = 0;
       let total = 0;
-
+    
       let userSubjects = await this.userSubjectRepository.getAll(userData.id, userData.career_id);
-
+    
       for (let i = 0; i < data.length; i++) {
-         let cat = data[i];
-         // set categoty data
-         let category = {
-            id: cat.id,
-            name: cat.name,
-            description: cat.description,
-            career_id: cat.career_id,
-            subject: [],
-            available: cat.available || i == 0,
-         };
-         let allFinished = true;
-
-         for (let j = 0; j < cat.subject.length; j++) {
-            let sub = cat.subject[j];
-            let userSub = userSubjects.find((a) => a.subject_id == sub.id);
-            let subjectCompleted = true;
-            let subject = {
-               id: sub.id,
-               name: sub.name,
-               prefix: sub.prefix,
-               info: sub.info,
-               selective: sub.selective,
-               selectiveSubjects: sub.selectiveSubjects,
-               chairs: sub.chairs,
-               conditions: sub.conditions,
-               label: sub.label,
-               subject_category_id: sub.subject_category_id,
-               available: false,
-               completed: false, 
-               userSubject: null,
-               subjectParents: [],
+        let cat = data[i];
+        // set categoty data
+        let category = {
+          id: cat.id,
+          name: cat.name,
+          description: cat.description,
+          career_id: cat.career_id,
+          subject: [],
+          available: cat.available || i == 0,
+        };
+        let allFinished = true;
+    
+        for (let j = 0; j < cat.subject.length; j++) {
+          let sub = cat.subject[j];
+          let userSub = userSubjects.find((a) => a.subject_id == sub.id);
+          let subjectCompleted = true;
+          let subject = {
+            id: sub.id,
+            name: sub.name,
+            prefix: sub.prefix,
+            info: sub.info,
+            selective: sub.selective,
+            selectiveSubjects: sub.selectiveSubjects,
+            chairs: sub.chairs,
+            conditions: sub.conditions,
+            label: sub.label,
+            subject_category_id: sub.subject_category_id,
+            available: false,
+            completed: false,
+            userSubject: null,
+            subjectParents: [],
+          };
+          total++;
+    
+          // Set userSubject data
+          if (userSub) {
+            subject.userSubject = {
+              id: userSub.id,
+              user_id: userSub.user_id,
+              subject_id: userSub.subject_id,
+              score: userSub.score,
+              finish: userSub.finish,
+              extra_score: userSub.extra_score,
             };
-            total++;
-
-            //set userSubject data
-            if (userSub) {
-               subject.userSubject = {
-                  id: userSub.id,
-                  user_id: userSub.user_id,
-                  subject_id: userSub.subject_id,
-                  score: userSub.score,
-                  finish: userSub.finish,
-                  extra_score: userSub.extra_score,
-               };
-               if (subject.userSubject.score) {
-                  points += subject.userSubject.score;
-                  count++;
-               }
-               if (subject.userSubject.score >= 4) {
-                  on++;
-                  subject.completed = true; 
-               } else {
-                  subjectCompleted = false;
-               }
-            } else {
-               subjectCompleted = false;
+            if (subject.userSubject.score) {
+              points += subject.userSubject.score;
+              count++;
             }
-
-            if (i == 0 && sub.subjectParent.length == 0) {
-               subject.available = true;
+            if (subject.userSubject.score >= 4) {
+              on++;
+              subject.completed = true;
             } else {
-               let allParentsCompleted = true;
-               for (let parent of sub.subjectParent) {
-                  let userParentSub = userSubjects.find((a) => a.subject_id == parent.parent.id);
-                  let parentCompleted = true;
-                  if (!userParentSub || userParentSub.score < 4) {
-                     parentCompleted = false;
-                     subjectCompleted = false;
-                     allParentsCompleted = false;
+              subjectCompleted = false;
+            }
+          } else {
+            subjectCompleted = false;
+          }
+    
+          // Apply subject parents and orCorrelative conditions
+          if (i == 0 && sub.subjectParent.length == 0) {
+            subject.available = true;
+          } else {
+            let allParentsCompleted = true;
+            for (let parent of sub.subjectParent) {
+              let userParentSub = userSubjects.find((a) => a.subject_id == parent.parent.id);
+              let parentCompleted = true;
+              if (!userParentSub || userParentSub.score < 4) {
+                parentCompleted = false;
+                subjectCompleted = false;
+                allParentsCompleted = false;
+              }
+    
+              // Handle orCorrelative within each parent
+              let orCorrelatives = [];
+              if (parent.orCorrelative && parent.orCorrelative.length > 0) {
+                let allOrCorrelativesCompleted = true;
+                for (let corId of parent.orCorrelative) {
+                  let userCorSub = userSubjects.find((a) => a.subject_id == corId);
+                  let corCompleted = true;
+                  if (!userCorSub || userCorSub.score < 4) {
+                    corCompleted = false;
+                    allOrCorrelativesCompleted = false;
                   }
-                  subject.subjectParents.push({
-                     id: parent.parent.id,
-                     name: parent.parent.name,
-                     completed: parentCompleted,
+                  orCorrelatives.push({
+                    id: corId,
+                    completed: corCompleted,
                   });
-               }
-               subject.available = allParentsCompleted && (category.available || sub.subjectParent.length);
+                }
+                if (!allOrCorrelativesCompleted) {
+                  parentCompleted = false;
+                  allParentsCompleted = false;
+                }
+              }
+    
+              subject.subjectParents.push({
+                id: parent.parent.id,
+                name: parent.parent.name,
+                completed: parentCompleted,
+                orCorrelative: orCorrelatives, // Add orCorrelative with completion status
+              });
             }
-
-            category.subject.push(subject);
-            if (!subjectCompleted) {
-               allFinished = false;
-            }
-         }
-         if (allFinished && data[i + 1]) {
-            data[i + 1]['available'] = true;
-         }
-         res.data.push(category);
+            subject.available = allParentsCompleted && (category.available || sub.subjectParent.length);
+          }
+    
+          category.subject.push(subject);
+          if (!subjectCompleted) {
+            allFinished = false;
+          }
+        }
+        if (allFinished && data[i + 1]) {
+          data[i + 1]['available'] = true;
+        }
+        res.data.push(category);
       }
-
+    
       if (points && count) {
-         res.prom = parseFloat((points / count).toFixed(2));
+        res.prom = parseFloat((points / count).toFixed(2));
       }
       res.total = total;
       res.on = on;
       res.count = count;
       return res;
-   }
+    }
+    
 
 }
