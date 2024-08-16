@@ -35,12 +35,6 @@ export class SubjectParent {
   })
   parent: Subject;
 
-  @Column("simple-array", {
-    nullable: true,
-    transformer: {
-      to: (value: number[]): string => value.join(','),
-      from: (value: string): number[] => value.split(',').map(Number),
-    }
-  })
+  @Column("simple-array", { nullable: true })
   orCorrelative: number[];
 }
