@@ -55,7 +55,7 @@ export class SubjectCategoryService {
     
       for (let i = 0; i < data.length; i++) {
         let cat = data[i];
-        // set category data
+        // set categoty data
         let category = {
           id: cat.id,
           name: cat.name,
@@ -112,7 +112,7 @@ export class SubjectCategoryService {
             subjectCompleted = false;
           }
     
-          // Apply subject parents and pass orCorrelative as is
+          // Apply subject parents and orCorrelative conditions
           if (i == 0 && sub.subjectParent.length == 0) {
             subject.available = true;
           } else {
@@ -126,12 +126,33 @@ export class SubjectCategoryService {
                 allParentsCompleted = false;
               }
     
-              // Pass orCorrelative directly without processing it
+              // Handle orCorrelative within each parent
+              let orCorrelatives = [];
+              if (parent.orCorrelative && parent.orCorrelative.length > 0) {
+                let allOrCorrelativesCompleted = true;
+                for (let corId of parent.orCorrelative) {
+                  let userCorSub = userSubjects.find((a) => a.subject_id == corId);
+                  let corCompleted = true;
+                  if (!userCorSub || userCorSub.score < 4) {
+                    corCompleted = false;
+                    allOrCorrelativesCompleted = false;
+                  }
+                  orCorrelatives.push({
+                    id: corId,
+                    completed: corCompleted,
+                  });
+                }
+                if (!allOrCorrelativesCompleted) {
+                  parentCompleted = false;
+                  allParentsCompleted = false;
+                }
+              }
+    
               subject.subjectParents.push({
                 id: parent.parent.id,
                 name: parent.parent.name,
                 completed: parentCompleted,
-                orCorrelative: parent.orCorrelative || [], // Add orCorrelative as is
+                orCorrelative: orCorrelatives, 
               });
             }
             subject.available = allParentsCompleted && (category.available || sub.subjectParent.length);
@@ -156,7 +177,6 @@ export class SubjectCategoryService {
       res.count = count;
       return res;
     }
-    
     
 
 }
