@@ -26,7 +26,7 @@ export class SubjectCategoryRepository {
             .leftJoinAndSelect('s.subject', 'ss')
             .leftJoinAndSelect('ss.subjectParent', 'ssp')
             .leftJoinAndSelect('ssp.parent', 'ssps')
-            .loadRelationCountAndMap("ss.opinionsCount", "ss.opinions")
+            .loadRelationCountAndMap("s.opinionsCount", "s.opinions")
             .where(id ? `s.career_id = ${id}` : '')
             // .where(data.userData.userRole[0].role_id == 2 ? `ssu.user_id = ${data.userData.id}`:'')
             .getMany()
