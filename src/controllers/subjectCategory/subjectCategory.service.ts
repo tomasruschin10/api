@@ -81,6 +81,7 @@ export class SubjectCategoryService {
             conditions: sub.conditions,
             label: sub.label,
             subject_category_id: sub.subject_category_id,
+            opinionsCount: sub.opinionsCount,
             available: false,
             completed: false,
             userSubject: null,
