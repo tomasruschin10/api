@@ -156,7 +156,7 @@ export class SubjectCategoryService {
                 orCorrelative: orCorrelatives, 
               });
             }
-            subject.available = allParentsCompleted && (category.available || sub.subjectParent.length);
+            subject.available = !!(allParentsCompleted && (category.available || sub.subjectParent.length));
           }
     
           category.subject.push(subject);
