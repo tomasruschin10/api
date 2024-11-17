@@ -249,7 +249,7 @@ export class AuthController {
     const mailOptions = {
       from: "muyfadu@gmail.com",
       to: email,
-      subject: "Registro Exitoso",
+      subject: "¡Ya formás parte de MuyFadu! - Registro exitoso",
       html: this.generateRegistrationEmailTemplate(username, email),
     };
 
@@ -271,17 +271,17 @@ export class AuthController {
     return `
       <html>
         <body>
-          <h1>Bienvenido a muyfadu</h1>
+          <h1>¡Te damos la bienvenida a MuyFadu!</h1>
           <p>¡Hola ${username}!</p>
-          <p>Tu registro ha sido exitoso. Ahora eres parte de nuestra comunidad.</p>
-          <p>Detalles de la cuenta:</p>
+          <p>¡Ya estás adentro! Tu cuenta está lista para usar, así que ahora formás parte de la comunidad de MuyFadu. 🎉</p>
+          <p>Tus datos:</p>
           <ul>
             <li><strong>Usuario:</strong> ${username}</li>
             <li><strong>Email:</strong> ${email}</li>
           </ul>
-          <p>Gracias por unirte a nosotros. ¡Esperamos que disfrutes de la aplicación!</p>
-          <p>Si no te registraste en nuestra aplicación, puedes ignorar este correo electrónico.</p>
-          <p>¡Gracias!</p>
+          <p>Gracias por sumarte. ¡Esperamos que te cope la app!</p>
+          <p>Si este registro no lo hiciste vos, tranqui, podés ignorar este mail.</p>
+          <p>Nos vemos en MuyFadu. 👋</p>
         </body>
       </html>
     `;
