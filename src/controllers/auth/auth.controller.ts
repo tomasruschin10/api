@@ -232,7 +232,6 @@ export class AuthController {
       },
       config.get("keys.jwtKey"),
       {
-        expiresIn: config.get("globals.expJWT"),
       }
     );
   }

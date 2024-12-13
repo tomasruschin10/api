@@ -22,7 +22,6 @@ export class LocalStrategy extends PassportStrategy(Strategy) {
         return jwt.sign({
             userData: res
         }, config.get("keys.jwtKey"), {
-            expiresIn: config.get("globals.expJWT")
         });
     }
 }
