@@ -16,7 +16,7 @@ export class offerCreateDto {
 
     @ApiProperty()
     @IsNotEmpty()
-    career_id: number[]
+    career_id: number
 
     @ApiProperty()
     @IsString()
