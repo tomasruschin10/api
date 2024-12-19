@@ -20,34 +20,35 @@ export class OfferService {
   async create(request: any, file) {
     request.image_id = (await this.imageRepository.create(file)).id;
   
-    const careerIds = Array.isArray(request.career_id)
-      ? request.career_id.map(id => parseInt(id))
-      : [parseInt(request.career_id)];
-  
-    const createdOffers = [];
-    for (const careerId of careerIds) {
-      const data: any = {
-        title: request.title,
-        offer_category_id: request.offer_category_id,
-        image_id: request.image_id,
-        career_id: careerId, 
-        user_id: request.userId,
-        url: request.url,
-      };
-  
-      if (request?.email) data.email = request.email;
-      if (request?.name) data.name = request.name;
-      if (request?.description) data.description = request.description;
-      if (request?.partner_id) data.partner_id = request.partner_id;
-      if (request?.company) data.company = request.company;
-      if (request?.phone) data.phone = request.phone;
-  
-      const offer = await this.offerRepository.create(data);
-      if (!offer) throw new BadRequestException(["incorrect data"]);
-      createdOffers.push(offer);
+    const data: any = {
+      title: request.title,
+      offer_category_id: request.offer_category_id,
+      image_id: request.image_id,
+      career_id: parseInt(request.career_id),
+      user_id: request.userId,
+      url: request.url,
+    };
+    if (request?.email) {
+      data.email = request.email;
     }
-  
-    return createdOffers.map(offer => this.getById(offer.id));
+    if (request?.name) {
+      data.name = request.name;
+    }
+    if (request?.description) {
+      data.description = request.description;
+    }
+    if (request?.partner_id) {
+      data.partner_id = request.partner_id;
+    }
+    if (request?.company) {
+      data.company = request.company;
+    }
+    if (request?.phone) {
+      data.phone = request.phone;
+    }
+    const offer = await this.offerRepository.create(data);
+    if (!offer) throw new BadRequestException(["incorrect data"]);
+    return await this.getById(offer.id);
   }
   
   async getAll(career, search) {
